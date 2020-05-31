@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Image, Platform, Dimensions } from 'react-native';
 import { Footer, FooterTab, Button, Text, View, Toast, Icon } from 'native-base';
+import { colors } from '../../configs/colors';
 
 const height = Dimensions.get('window').height
 // console.log(height)
@@ -8,19 +9,19 @@ const height = Dimensions.get('window').height
 // #FD90C3
 const CustomFooter = ({ isActive, navigation }) => {
     return (
-        <Footer style={{ elevation: 0, backgroundColor: "black" }} >
+        <Footer style={{ elevation: 0, backgroundColor: colors.background }} >
             <FooterTab style={styles.footer}>
                 <Button onPress={() => navigation.navigate("")}>
-                    <Icon style={{ ...styles.icon, color: `${isActive === 'bookings' ? 'orange' : '#FFF'}` }} name='md-menu' />
+                    <Icon style={{ ...styles.icon, color: `${isActive === 'bookings' ? colors.highlight : '#FFF'}` }} name='md-menu' />
                 </Button>
                 <Button onPress={() => navigation.navigate("home")}>
-                    <Icon style={{ ...styles.icon, color: `${isActive === 'home' ? 'orange' : '#FFF'}` }} name='md-home' />
+                    <Icon style={{ ...styles.icon, color: `${isActive === 'home' ? colors.highlight : '#FFF'}` }} name='md-home' />
                 </Button>
                 <Button onPress={() => navigation.navigate("")}>
-                    <Icon style={{ ...styles.icon, color: `${isActive === 'bookings' ? 'orange' : '#FFF'}` }} name='md-search' />
+                    <Icon style={{ ...styles.icon, color: `${isActive === 'bookings' ? colors.highlight : '#FFF'}` }} name='md-search' />
                 </Button>
                 <Button onPress={() => navigation.navigate("")}>
-                    <Icon style={{ ...styles.icon, color: `${isActive === 'bookings' ? 'orange' : '#FFF'}` }} name='ios-add-circle-outline' />
+                    <Icon style={{ ...styles.icon, color: `${isActive === 'bookings' ? colors.highlight : '#FFF'}` }} name='ios-add-circle-outline' />
                 </Button>
             </FooterTab>
         </Footer>
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
         marginBottom: 0,
         paddingBottom: 0,
         alignSelf: "flex-end",
-        backgroundColor: "black"
+        backgroundColor: colors.background
     },
     items: {
         // textAlign:"center",
