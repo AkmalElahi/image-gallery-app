@@ -1,12 +1,23 @@
 import React from 'react'
-import { FlatList, Dimensions, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { Container, Tabs, ScrollableTab, Tab } from 'native-base';
+import { FlatList, Dimensions, Image, StyleSheet, TouchableOpacity, ImageBackground, Text } from 'react-native';
+import { Container, Tabs, ScrollableTab, Tab, Card, CardItem, Title } from 'native-base';
 import { colors } from '../../configs/colors';
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
 
-const MainTab = ({ images, navigation, onScroll }) => (
+//     there is 10px margin on the sides, 4px vertical separation between cards
+
+// inside the card we have 38px horizontal padding and centered vertically
+
+// album title can be one or two lines
+
+// the cover image of each card has a gray overlay, is gray #141414 with 50% alpha or rgba(20, 20, 20, 0.5)
+
+// album title text is 23px size, white with 90% opacity
+// number of wallpapers text is 14px size, white with 70% opacity
+
+const MainTab = ({ images, navigation, onScroll, albums }) => (
     <Tabs
         style={{ backgroundColor: colors.background }}
         tabContainerStyle={{ elevation: 100, backgroundColor: colors.background, width: "65%" }}
@@ -38,12 +49,46 @@ const MainTab = ({ images, navigation, onScroll }) => (
                 onScroll={onScroll}
                 showsVerticalScrollIndicator={false}
                 style={{ backgroundColor: colors.background }}
-                data={images}
-                numColumns={3}
+                data={albums}
+                numColumns={1}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => navigation.navigate('wallpaper')}>
-                        <Image source={{ uri: item.url }} style={{ width: width / 3, height: height / 3 }} />
-                    </TouchableOpacity>
+                    <Card style={{
+                        backgroundColor: 'rgba(20, 20, 20, 0.5)',
+                        paddingVertical: 2,
+                        marginBottom: 0,
+                        marginTop: 0,
+                        borderWidth: 0,
+                        borderColor: colors.background
+                    }} >
+                        <CardItem
+                            // button
+                            // onPress={() => navigation.navigate('wallpaper', {
+                            //     album: albums.indexOf(item)
+                            // })}
+                            cardBody style={{ marginHorizontal: 10, backgroundColor:colors.background }}>
+                            <ImageBackground source={{ uri: item.thumb }} style={{
+                                height: height / 5,
+                                width: null,
+                                flex: 1,
+                                justifyContent: 'center',
+                            }} >
+                                <Text style={{
+                                    paddingHorizontal: 38,
+                                    textAlign: 'center',
+                                    color: 'rgba(255,255,255,0.9)',
+                                    fontSize: 23,
+                                    fontWeight: 'bold'
+                                }}>{item.title}</Text>
+                                <Text style={{
+                                    paddingHorizontal: 38,
+                                    textAlign: 'center',
+                                    color: 'rgba(255,255,255,0.7)',
+                                    fontSize: 14,
+                                    fontWeight: 'bold'
+                                }}>{item.photos} wallpapers</Text>
+                            </ImageBackground>
+                        </CardItem>
+                    </Card>
                 )}
                 keyExtractor={item => item.id}
             />

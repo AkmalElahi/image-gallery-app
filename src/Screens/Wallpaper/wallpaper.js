@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, FlatList, Image, Dimensions, StyleSheet, ImageBackground, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import Swiper from 'react-native-swiper';
-import { images } from '../../data/data'
+import { images, albums } from '../../data/data'
 import CustomFooter from '../../Components/CustomFooter/Footer';
 import CustomHeader from '../../Components/CustomHeader/Header';
 import { Icon } from 'native-base';
@@ -15,6 +15,8 @@ const WallPaper = ({ navigation }) => {
 
     //     return () => clearInterval(t);
     // }, [opacity]);
+    const wallpaper = navigation.getParam('wallpaper')
+    const album = navigation.getParam('album')
 
     useEffect(() => {
         const intervalId = setInterval(() => {  //assign interval to a variaable to clear it
@@ -31,17 +33,21 @@ const WallPaper = ({ navigation }) => {
         <View style={{ flex: 1 }}>
             {/* <CustomHeader leftButton={() => navigation.goBack()} istransparent={true} ishome={false} icon={'arrow-back'} /> */}
             <Swiper
-                index={navigation.getParam('wallpaper')}
-                containerStyle={{ flex: 1, borderWidth: 0 }}
+                index={wallpaper}
+                containerStyle={{ flex: 1, borderWidth: 0, backgroundColor: colors.background }}
                 loadMinimal={true}
+                loadMinimalSize={2}
                 autoplay={false}
                 loop={false}
                 showsPagination={false}
                 scrollEnabled={true}>
-                {images.map(image => (
+                {wallpaper ? images.map(image => (
                     <TouchableWithoutFeedback onPress={() => setOpacity(0.7)}>
                         <Image source={{ uri: image.url }} style={{ width, height }} />
-                    </TouchableWithoutFeedback>))}
+                    </TouchableWithoutFeedback>)) : albums.map(image => (
+                        <TouchableWithoutFeedback onPress={() => setOpacity(0.7)}>
+                            <Image source={{ uri: image.thumb }} style={{ width, height }} />
+                        </TouchableWithoutFeedback>))}
             </Swiper>
             <TouchableOpacity style={styles.header} onPress={() => navigation.goBack()}>
                 <Icon name='arrow-back' style={{ color: 'white' }} />

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View, Text, FlatList, Image, Dimensions, StyleSheet, Animated } from 'react-native'
 import { Container, Tabs, ScrollableTab, Tab } from 'native-base';
-import { images } from '../../data/data'
+import { images, albums } from '../../data/data'
 import header from '../../assets/app-header.png'
 import CustomHeader from '../../Components/CustomHeader/Header'
 import CustomFooter from '../../Components/CustomFooter/Footer'
@@ -61,6 +61,7 @@ class Home extends Component {
                             <MainTab
                                 navigation={navigation}
                                 images={images}
+                                albums={albums}
                                 onScroll={Animated.event(
                                     [{ nativeEvent: { contentOffset: { y: this.scrollYAnimatedValue } } }]
                                 )}
