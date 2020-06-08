@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -23,18 +23,26 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { PersistGate } from 'redux-persist/integration/react'
+import { Provider, connect } from 'react-redux'
+import { store, persistor } from './src/redux';
 import Home from './src/Screens/Home/Home';
 import WallPaper from './src/Screens/Wallpaper/wallpaper';
 import AppContainer from './src/Navigation/Navigation'
+import { colors } from './src/configs/colors';
 
 const App = () => {
   return (
-    <>
-      <StatusBar barStyle="light-content"  />
-        {/* <WallPaper/> */}
-        {/* <Home/> */}
-        <AppContainer/>
-    </>
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <>
+          <StatusBar barStyle="light-content" backgroundColor={colors.background} />
+          {/* <WallPaper/> */}
+          {/* <Home/> */}
+          <AppContainer />
+        </>
+      </PersistGate>
+    </Provider>
   );
 };
 
