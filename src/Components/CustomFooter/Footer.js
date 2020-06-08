@@ -11,14 +11,14 @@ const CustomFooter = ({ isActive, navigation }) => {
     return (
         <Footer style={{ elevation: 0, backgroundColor: colors.background }} >
             <FooterTab style={styles.footer}>
-                <Button onPress={() => navigation.navigate("")}>
-                    <Icon style={{ ...styles.icon, color: `${isActive === 'bookings' ? colors.highlight : '#FFF'}` }} name='md-menu' />
+                <Button onPress={() => navigation.openDrawer()}>
+                    <Icon style={{ ...styles.icon, color: `${isActive === 'drawer' ? colors.highlight : '#FFF'}` }} name='md-menu' />
                 </Button>
                 <Button onPress={() => navigation.navigate("home")}>
                     <Icon style={{ ...styles.icon, color: `${isActive === 'home' ? colors.highlight : '#FFF'}` }} name='md-home' />
                 </Button>
-                <Button onPress={() => navigation.navigate("")}>
-                    <Icon style={{ ...styles.icon, color: `${isActive === 'bookings' ? colors.highlight : '#FFF'}` }} name='md-search' />
+                <Button onPress={() => navigation.navigate("search")}>
+                    <Icon style={{ ...styles.icon, color: `${isActive === 'search' ? colors.highlight : '#FFF'}` }} name='md-search' />
                 </Button>
                 <Button onPress={() => navigation.navigate("")}>
                     <Icon style={{ ...styles.icon, color: `${isActive === 'bookings' ? colors.highlight : '#FFF'}` }} name='ios-add-circle-outline' />
