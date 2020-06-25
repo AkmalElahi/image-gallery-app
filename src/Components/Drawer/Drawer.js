@@ -16,7 +16,7 @@ const DrawerContent = ({ navigation }) => {
         <Content style={styles.content}>
             <Image source={banner} style={{ width: '100%', height: 220 }} />
             <View style={styles.body}>
-                <TouchableOpacity style={styles.row} onPress={()=> navigation.navigate('home')}>
+                <TouchableOpacity style={styles.row} onPress={()=> navigation.navigate('tabs')}>
                     <Icon name='home' style={styles.icon} />
                     <Text style={styles.text}>Home</Text>
                 </TouchableOpacity>
@@ -26,7 +26,7 @@ const DrawerContent = ({ navigation }) => {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.row}>
                     <Icon name='md-search' style={styles.icon} />
-                    <Text style={styles.text}>Delete search hisrort</Text>
+                    <Text style={styles.text}>Delete search history</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.row}>
                     <Icon name='md-refresh' style={styles.icon} />

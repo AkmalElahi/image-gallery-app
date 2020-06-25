@@ -3,8 +3,8 @@
 // import { Container, Tabs, ScrollableTab, Tab } from 'native-base';
 import { images, albums } from '../../data/data'
 import header from '../../assets/app-header.png'
-import React, { Component, useEffect, useState } from "react";
-import { Animated, Dimensions, Platform, Text, View, FlatList, Image, StyleSheet } from 'react-native';
+import React, { Component, useEffect, useState, useRef } from "react";
+import { Animated, Dimensions, Platform, Text, View, FlatList, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import { Body, Header, List, ListItem as Item, ScrollableTab, Tab, Tabs, Title } from "native-base";
 
 const NAVBAR_HEIGHT = 56;
@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 import { getAlbumMiddleware } from '../../redux/albums/albums.actions';
 import { getWallpaperMiddleware } from '../../redux/wallpapers/wallpaper.actions';
 import CustomFooter from '../../Components/CustomFooter/Footer';
-// const { width } = Dimensions.get('window')
+const { width, height } = Dimensions.get('window')
 const TAB_PROPS = {
     tabStyle: { backgroundColor: colors.background },
     activeTabStyle: { backgroundColor: colors.background },
@@ -24,16 +24,19 @@ const TAB_PROPS = {
 };
 const tabs = [
     {
-        heading: "NEW"
+        heading: "new"
     },
     {
-        heading: "FEATURED"
+        heading: "featured"
     },
     {
-        heading: "POPULAR"
+        heading: "popular"
     },
     {
-        heading: "FAVORITES"
+        heading: "random"
+    },
+    {
+        heading: "favorites"
     }
 ]
 
@@ -51,23 +54,46 @@ const getData = (getAlbums, getWallpapers, type) => {
     getAlbums({ type: type.toLowerCase() }),
         getWallpapers({ type: type.toLowerCase() })
 }
-const Home = ({ navigation, getAlbums, getWallpapers }) => {
-    const [type, setType] = useState('new')
-    const scroll = new Animated.Value(0);
-    let headerY;
+const Home = ({ navigation, albums, wallpaper }) => {
+    // const [currentTab, setCurrentTab] = useState('new')
+    // const [page, setpage] = useState(1)
+    // const [active, setActive] = useState('wallpaper')
+    // const [tabStatus, setTabStatus] = useState({
+    //     currentTab: 'new',
+    //     page: 1,
+    //     active: 'wallpaper'
+    // })
+    // const _myScroll = useRef(null);
 
-    headerY = Animated.multiply(Animated.diffClamp(scroll, 0, NAVBAR_HEIGHT), -1)
+    const scroll = useRef(new Animated.Value(0)).current;
+
+
+    const headerY = Animated.multiply(Animated.diffClamp(scroll, 0, NAVBAR_HEIGHT), -1)
     let tabY = Animated.add(scroll, headerY)
 
 
     const setTab = (i) => {
-        console.log("IN CHANGE TAB", i.ref.props.heading)
-        setType(i.ref.props.heading)
+        // console.log("IN CHANGE TAB", i.ref.props.heading)
+        // setType(i.ref.props.heading)
+        setActive('wallpaper')
+        setpage(1)
+        _myScroll.current.scrollTo({ x: 0, y: 0, animated: true })
 
     }
-    useEffect(() => {
-        getData(getAlbums, getWallpapers, type)
-    }, [type]);
+    const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
+        const paddingToBottom = 20
+        // console.log({ layoutMeasurement, contentOffset, contentSize })
+        if (contentOffset.y > 0 && !wallpaper.isloading) {
+            if (layoutMeasurement.height + contentOffset.y >=
+                contentSize.height - paddingToBottom) {
+                setTabStatus({ ...tabStatus, page: tabStatus.page + 1 })
+            }
+        }
+    }
+
+    // useEffect(() => {
+    //     getData(getAlbums, getWallpapers, type)
+    // }, [type]);
 
     //     // const scrollYAnimatedValue = useRef(new Animated.Value(0))
 
@@ -91,8 +117,9 @@ const Home = ({ navigation, getAlbums, getWallpapers }) => {
     //     //         useNativeDriver: true
     //     //     });
 
+    console.log("HERE HOME RENDERS ====>")
     return (
-        <View style={{ backgroundColor: colors.background, flex:1 }}>
+        <View style={{ backgroundColor: colors.background, flex: 1 }}>
             {Platform.OS === "ios" &&
                 <View style={{ backgroundColor: colors.background, height: 20, width: "100%", position: "absolute", zIndex: 2 }} />}
             <Animated.View style={{
@@ -106,26 +133,54 @@ const Home = ({ navigation, getAlbums, getWallpapers }) => {
                 zIndex: 1,
                 backgroundColor: colors.background
             }}>
-                <Header androidStatusBarColor={colors.background} style={{ backgroundColor: "transparent" }} hasTabs>
-                    <Image source={header} style={{ width: '100%', height: '100%' }} />
-                </Header>
+                <Image source={header} style={{ backgroundColor: colors.background, width: width, height: NAVBAR_HEIGHT }} />
             </Animated.View>
-            <Animated.ScrollView
+            {/* <Animated.ScrollView
+                ref={(myScrll) => _myScroll.current = myScrll}
+                onResponderEnd={() => alert('end')}
                 scrollEventThrottle={1}
                 bounces={false}
+                nestedScrollEnabled={true}
+                scrollEnabled={true}
                 showsVerticalScrollIndicator={false}
-                style={{ zIndex: 0, height: "100%", elevation: -1 }}
+                // onMomentumScrollEnd={({ nativeEvent }) => {
+                //     if (isCloseToBottom(nativeEvent)) {
+                //         alert('end')
+                //     }
+                // }}
+                style={{ zIndex: 0, height: "100%", elevation: -1, }}
                 contentContainerStyle={{ paddingTop: NAVBAR_HEIGHT }}
                 onScroll={Animated.event(
                     [{ nativeEvent: { contentOffset: { y: scroll } } }],
-                    { useNativeDriver: true },
+                    // { useNativeDriver: true },
+                    {
+                        useNativeDriver: true,
+                        listener: event => {
+                            // if (isCloseToBottom(event.nativeEvent)) {
+                            //     setpage(page + 1)
+                            // }
+                            isCloseToBottom(event.nativeEvent)
+                        }
+                    }
                 )}
+                // onScroll={Animated.event(
+                //     [{ nativeEvent: { contentOffset: { y: this.state.scrollY } } }],
+                //     {
+                //       listener: event => {
+                //         if (this.isCloseToBottom(event.nativeEvent)) {
+                //           this.loadMoreData()
+                //         }
+                //       }
+                //     }
+                //   )}
                 overScrollMode="never">
+            </Animated.ScrollView> */}
                 <Tabs renderTabBar={(props) => <Animated.View
                     style={[{
                         transform: [{ translateY: tabY }],
                         zIndex: 1,
                         width: "100%",
+                        marginTop:NAVBAR_HEIGHT,
                         backgroundColor: colors.background,
                         borderBottomColor: '#000'
                     }, Platform.OS === "ios" ? { paddingTop: 20 } : null]}>
@@ -134,26 +189,69 @@ const Home = ({ navigation, getAlbums, getWallpapers }) => {
                         borderBottomColor: '#000',
                         // transform: [{ translateY: headerHeight }], 
                     }} />
+                    {/* <View style={{ height: 50, flexDirection: 'row', alignItems: 'center', }}>
+                        <Text onPress={() => {
+                            setTabStatus({
+                                ...tabStatus,
+                                active: 'wallpaper',
+                                page: 1
+                            })
+                        }} style={{ height: '100%', textAlign: 'center', fontSize: 12, color: `${tabStatus.active === 'wallpaper' ? colors.highlight : 'grey'}`, width: '35%', padding: 16, paddingLeft: 3 }}>WALLPAPERS</Text>
+                        <Text onPress={() => {
+                            setTabStatus({
+                                ...tabStatus,
+                                active: 'album',
+                                page: 1
+                            })
+                        }} style={{ height: '100%', textAlign: 'center', fontSize: 12, color: `${tabStatus.active === 'album' ? colors.highlight : 'grey'}`, width: '35%', padding: 16, paddingLeft: 0 }}>ALBUMS</Text>
+                    </View> */}
                 </Animated.View>
                 }
-                    onChangeTab={setTab}
+                    // onChangeTab={(i) => {
+                    //     // setCurrentTab(i.ref.props.heading.toLowerCase())
+                    //     // setActive('wallpaper')
+                    //     // setpage(1)
+                    //     setTabStatus({
+                    //         page: 1,
+                    //         active: 'wallpaper',
+                    //         currentTab: i.ref.props.heading.toLowerCase()
+                    //     })
+                    //     _myScroll.current.scrollTo({ x: 0, y: 0, animated: true })
+                    // }}
                     tabBarUnderlineStyle={{ backgroundColor: colors.highlight }}
                 >
                     {tabs.map(tab =>
-                        <Tab heading={tab.heading} {...TAB_PROPS}>
+                        <Tab heading={tab.heading.toUpperCase()} {...TAB_PROPS}>
                             <MainTab
+                                // onStartShouldSetResponderCapture={() => {
+                                //     setScroll(false);
+                                //     if (_myScroll.current.contentOffset === 0
+                                //         && enableScrollViewScroll === false) {
+                                //         setScroll(true);
+                                //     }
+                                // }}
+                                // page={tabStatus.page}
                                 navigation={navigation}
                                 // images={images}
                                 // albums={albums}
+                                // active={tabStatus.active}
                                 currentTab={tab.heading}
                             // onScroll={Animated.event(
                             //     [{ nativeEvent: { contentOffset: { y: scrollYAnimatedValue } } }],
                             //     { useNativeDriver: false }
                             // )}
+                            // onScroll={Animated.event(
+                            //     [{ nativeEvent: { contentOffset: { y: scroll } } }],
+                            //     { useNativeDriver: true },
+                            // )}
                             />
                         </Tab>)}
                 </Tabs>
-            </Animated.ScrollView>
+                {/* {(wallpaper.isloading || albums.isloading) && tabStatus.page > 1 && <View style={{
+                    height: 50,
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}><ActivityIndicator color={colors.highlight} /></View>} */}
             <CustomFooter isActive={'home'} navigation={navigation} />
         </View>
         //         <View style={[styles.container,]}>
@@ -230,15 +328,12 @@ const styles = StyleSheet.create({
     },
 
 })
-// const mapStateToProps = ({ albums: { albums }, wallpaper: { wallpapers } }) => ({
+// const mapStateToProps = ({ albums, wallpaper }) => ({
 //     albums,
-//     wallpapers
+//     wallpaper
 // })
-const mapDispatchToProps = dispatch => ({
-    getAlbums: data => dispatch(getAlbumMiddleware(data)),
-    getWallpapers: data => dispatch(getWallpaperMiddleware(data))
-})
-export default connect(null, mapDispatchToProps)(Home)
+
+export default Home
 
 
     // class Home extends Component {

@@ -1,6 +1,17 @@
 import { wallpaperActionTypes } from './wallpaper.actions.types';
+const loadMore = (wallpapersToAdd, oldWallpapers) => {
+    const isExist = !!wallpapersToAdd.length
+    if (isExist) {
+        return [...oldWallpapers, ...wallpapersToAdd]
+    }
+    return oldWallpapers
+
+}
 const INITIAL_STATE = {
-    wallpapers: null,
+    new: [],
+    featured: [],
+    random: [],
+    popular: [],
     searchedWallpapers: [],
     isloading: false,
     message: '',
@@ -13,15 +24,38 @@ const wallpaperReducer = (state = INITIAL_STATE, action) => {
             return Object.assign({
                 ...state,
                 isloading: true,
-                wallpapers: [],
                 status: "get wallpaper request"
             })
-        case wallpaperActionTypes.GET_WALLPAPER_SUCCESS:
-            console.log("PAYLOAD IN WALLPAPER", action.payload)
+        case wallpaperActionTypes.GET_NEW_WALLPAPER_SUCCESS:
+            // console.log("PAYLOAD IN WALLPAPER", action.payload)
             return Object.assign({
                 ...state,
                 isloading: false,
-                wallpapers: action.payload,
+                new: loadMore(action.payload, state.new),
+                status: "get wallpaper success",
+            })
+        case wallpaperActionTypes.GET_FEATURED_WALLPAPER_SUCCESS:
+            // console.log("PAYLOAD IN WALLPAPER", action.payload)
+            return Object.assign({
+                ...state,
+                isloading: false,
+                featured: loadMore(action.payload, state.featured),
+                status: "get wallpaper success",
+            })
+        case wallpaperActionTypes.GET_POPULAR_WALLPAPER_SUCCESS:
+            // console.log("PAYLOAD IN WALLPAPER", action.payload)
+            return Object.assign({
+                ...state,
+                isloading: false,
+                popular: loadMore(action.payload, state.popular),
+                status: "get wallpaper success",
+            })
+        case wallpaperActionTypes.GET_RANDOM_WALLPAPER_SUCCESS:
+            // console.log("PAYLOAD IN WALLPAPER", action.payload)
+            return Object.assign({
+                ...state,
+                isloading: false,
+                random: loadMore(action.payload, state.random),
                 status: "get wallpaper success",
             })
         case wallpaperActionTypes.GET_WALLPAPER_FAILURE:
@@ -51,7 +85,6 @@ const wallpaperReducer = (state = INITIAL_STATE, action) => {
                 ...state,
                 isloading: false,
                 searchedWallpapers: [],
-                // wallpapers:[],
                 status: "clear search"
             })
         case wallpaperActionTypes.CHANGE_MANAGER_STATUS_FAILURE:

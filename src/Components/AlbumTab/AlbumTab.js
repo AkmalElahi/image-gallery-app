@@ -1,37 +1,50 @@
-import React from 'react'
-import { Animated, ImageBackground, View, Text, Dimensions } from "react-native"
+import React, { PureComponent, useState } from 'react'
+import { Animated, ImageBackground, View, Text, Dimensions, ActivityIndicator, TouchableWithoutFeedback, TouchableOpacity } from "react-native"
 import { Card, CardItem } from "native-base"
 import { colors } from "../../configs/colors"
 import { connect } from 'react-redux'
+import WallpaperTab from '../WallpaperTab/WallpaperTab'
+import { images } from '../../data/data'
+import AlbumsGrid from '../AlbumGrid/AlbumGrid'
 const { width, height } = Dimensions.get('window')
 
-const albumContainer = ({ item }) => (
-    <Card style={{
-        backgroundColor: 'rgba(20, 20, 20, 0.5)',
-        paddingVertical: 2,
-        marginBottom: 0,
-        marginTop: 0,
-        borderWidth: 0,
-        borderColor: colors.background
-    }} >
-        <CardItem
-            // button
-            // onPress={() => navigation.navigate('wallpaper', {
-            //     album: albums.indexOf(item)
-            // })}
-            cardBody style={{ marginHorizontal: 10, backgroundColor: colors.background }}>
-            <ImageBackground source={{ uri: item.thumb }} style={{
+class AlbumContainer extends PureComponent {
+    render() {
+        const { item: { item }, setGridState, navigation } = this.props
+        return (
+            <Card style={{
+                backgroundColor: 'rgba(20, 20, 20, 0.5)',
+                paddingVertical: 2,
+                marginBottom: 0,
+                marginTop: 0,
+                borderWidth: 0,
+                width: width,
                 height: height / 5,
-                width: null,
-                flex: 1,
-                justifyContent: 'center',
+                borderColor: colors.background
             }} >
-                <View style={{
-                    flex: 1,
-                    backgroundColor: 'rgba(20, 20, 20, 0.5)',
+                {/* <CardItem
+                    // button
+                    // onPress={() => navigation.navigate('wallpaper', {
+                    //     album: albums.indexOf(item)
+                    // })}
+                    cardBody style={{ marginHorizontal: 10, backgroundColor: colors.background }}>
+                </CardItem> */}
+                <ImageBackground source={{ uri: item.thumb }} style={{
+                    height: height / 5,
+                    width: width - 3,
+                    marginVertical: 2,
+                    alignSelf: 'center',
                     justifyContent: 'center',
-                }}>
-                    <Text style={{
+                }} >
+                    <TouchableOpacity onPress={() => navigation.navigate('albumGrid', {
+                        slug: item.slug,
+                        title:item.title
+                    })} style={{
+                        flex: 1,
+                        backgroundColor: 'rgba(20, 20, 20, 0.5)',
+                        justifyContent: 'center',
+                    }}>
+                        <Text style={{
                         paddingHorizontal: 38,
                         textAlign: 'center',
                         color: 'rgba(255,255,255,0.9)',
@@ -45,30 +58,41 @@ const albumContainer = ({ item }) => (
                         fontSize: 14,
                         fontWeight: 'bold'
                     }}>{item.photos} wallpapers</Text>
-                </View>
-            </ImageBackground>
-        </CardItem>
-    </Card>
-)
+                    </TouchableOpacity>
+                </ImageBackground>
+            </Card >
+        )
+    }
+}
 
 
-const AlbumTab = ({ onScroll, albums }) => {
+const AlbumTab = ({ onScroll, albums, currentTab, page, setPage, wallpapers, navigation }) => {
+    const [gridStete, setGridState] = useState({ showGrid: false, slug: '' })
+    // console.log(gridStete)
     return (
-        <Animated.FlatList
-            scrollEventThrottle={16}
-            onScroll={onScroll}
-            showsVerticalScrollIndicator={false}
-            style={{ backgroundColor: colors.background }}
-            data={albums}
-            numColumns={1}
-            renderItem={(item) => albumContainer(item)}
-            keyExtractor={(item, index) => index}
-        />
+        // gridStete.showGrid ?
+        (
+            // <AlbumsGrid slug={gridStete.slug} />) : (
+            !albums.length ? <View style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}><ActivityIndicator color={colors.highlight} /></View> :
+                <Animated.FlatList
+                    scrollEventThrottle={16}
+                    onScroll={onScroll}
+                    showsVerticalScrollIndicator={false}
+                    style={{ backgroundColor: colors.background }}
+                    data={albums}
+                    numColumns={1}
+                    onEndReached={({ distanceFromEnd }) => {
+                        setPage(page + 1)
+                    }}
+                    renderItem={(item) => (<AlbumContainer navigation={navigation} setGridState={setGridState} item={item} />)}
+                    keyExtractor={(item) => item.title}
+                />)
     )
 }
 
-const mapStateToProps = ({ albums: { albums } }) => ({
-    albums
-})
 
-export default connect(mapStateToProps)(AlbumTab)
+export default AlbumTab

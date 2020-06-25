@@ -4,10 +4,16 @@ import { Container, Tabs, ScrollableTab, Tab, Card, CardItem, Title, View } from
 import { colors } from '../../configs/colors';
 import FastImage from 'react-native-fast-image';
 import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect'
+import { selectwallpaperNew, selectwallpaperLoading } from '../../redux/wallpapers/wallpaper.selector'
 import { getAlbumMiddleware } from '../../redux/albums/albums.actions';
 import { getWallpaperMiddleware } from '../../redux/wallpapers/wallpaper.actions';
-import WallpaperTab from '../WallpaperTab/WallpaperTab';
-import AlbumTab from '../AlbumTab/AlbumTab';
+import WallpaperTab from '../../Components/WallpaperTab/WallpaperTab';
+import AlbumTab from '../../Components/AlbumTab/AlbumTab';
+import CustomFooter from '../../Components/CustomFooter/Footer';
+import { selectAlbumNew, selectalbumLoading } from '../../redux/albums/albums.selector';
+import { setActiveRoute } from '../../redux/activeRoute/activeRoute.actions';
+import { withNavigationFocus } from 'react-navigation';
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
@@ -23,7 +29,7 @@ const height = Dimensions.get('window').height
 // album title text is 23px size, white with 90% opacity
 // number of wallpapers text is 14px size, white with 70% opacity
 
-const MainTab = ({ navigation, onScroll, getAlbums, getWallpapers, currentTab, onStartShouldSetResponderCapture }) => {
+const NewTab = ({ navigation, albums, wallpapers, getAlbums, getWallpapers, currentTab, wallpapersLoading, albumsLoading, setActiveRoute }) => {
     const [wapllpaperPage, setWallpaperPage] = useState(1)
     const [albumPage, setAlbumPage] = useState(1)
 
@@ -31,21 +37,22 @@ const MainTab = ({ navigation, onScroll, getAlbums, getWallpapers, currentTab, o
 
     const getData = () => {
         if (active === 'wallpaper') {
-            getWallpapers({ type: currentTab, page: wapllpaperPage })
+            getWallpapers({ type: 'new', page: wapllpaperPage })
             return
         }
         if (active === 'album') {
-            getAlbums({ type: currentTab, page: albumPage })
+            getAlbums({ type: 'new', page: albumPage })
             return
         }
 
     }
     // const SetTab=(i) =>{
     //     console.log(i)
-    // }
+    // 
     // useEffect(() => {
-    //     getData(currentTab)
-    // }, []);
+    //     !navigation.isFocused() && setActive('wallpaper')
+    //     console.log(navigation.isFocused())
+    // }, [navigation.isFocused()]);
     useEffect(() => {
         getData()
     }, [active, albumPage, wapllpaperPage]);
@@ -71,34 +78,38 @@ const MainTab = ({ navigation, onScroll, getAlbums, getWallpapers, currentTab, o
 
         // </Tabs>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
-            <View style={{ height: 45, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.background, padding: 0 }}>
+            {console.log("ROUTE IN NEW")}
+            <View style={{ height: 46, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.background, padding: 0 }}>
                 <Text onPress={() => {
                     setActive('wallpaper')
                 }
                 } style={{ height: '100%', textAlign: 'center', fontSize: 12, color: `${active === 'wallpaper' ? colors.highlight : 'grey'}`, width: '35%', padding: 16, paddingLeft: 3 }}>WALLPAPERS</Text>
                 <Text onPress={() => { setActive('album') }} style={{ height: '100%', textAlign: 'center', fontSize: 12, color: `${active === 'album' ? colors.highlight : 'grey'}`, width: '35%', padding: 16, paddingLeft: 0 }}>ALBUMS</Text>
             </View>
-            {/* {console.log("ALBUM PAGE",albumPage, "WALLPAPER PAGE", wapllpaperPage, currentTab)} */}
-
+            {/* {console.log("ALBUM PAGE", albumPage, "WALLPAPER PAGE", wapllpaperPage, 'new')} */}
             {active === 'wallpaper' ? (<WallpaperTab
-                currentTab={currentTab}
+                currentTab={'new'}
                 navigation={navigation}
                 // onScroll={onScroll}
+                wallpapers={wallpapers}
                 page={wapllpaperPage}
                 setPage={setWallpaperPage}
             // loadMore={getData}
             />) : (
                     <AlbumTab
-                        currentTab={currentTab}
+                        currentTab={'new'}
+                        navigation={navigation}
+                        albums={albums}
+                        currentTab={'new'}
                         page={albumPage}
                         setPage={setAlbumPage}
                     />
                 )}
-            {/* {(wallpaper.isloading || albums.isloading) && (wapllpaperPage > 1 || albumPage > 1) && <View style={{
+            {(!!wallpapers.length && !!albums.length && (wallpapersLoading || albumsLoading) && (wapllpaperPage > 1 || albumPage > 1)) && <View style={{
                 height: 50,
                 justifyContent: 'center',
                 alignItems: 'center'
-            }}><ActivityIndicator color={colors.highlight} /></View>} */}
+            }}><ActivityIndicator color={colors.highlight} /></View>}
         </View>
 
     )
@@ -119,12 +130,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     }
 })
-// const mapStateToProps = ({ albums, wallpaper }) => ({
-//     albums,
-//     wallpaper
-// })
+const mapStateToProps = createStructuredSelector({
+    wallpapers: selectwallpaperNew,
+    albums: selectAlbumNew,
+    wallpapersLoading: selectwallpaperLoading,
+    albumsLoading: selectalbumLoading
+})
 const mapDispatchToProps = dispatch => ({
     getAlbums: data => dispatch(getAlbumMiddleware(data)),
-    getWallpapers: data => dispatch(getWallpaperMiddleware(data))
+    getWallpapers: data => dispatch(getWallpaperMiddleware(data)),
+    // setActiveRoute: data => dispatch(setActiveRoute(data))
 })
-export default connect(null, mapDispatchToProps)(MainTab)
+export default connect(mapStateToProps, mapDispatchToProps)(NewTab)

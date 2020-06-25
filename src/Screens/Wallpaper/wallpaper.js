@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, FlatList, Image, Dimensions, StyleSheet, ImageBackground, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, FlatList, Image, Dimensions, StyleSheet, ImageBackground, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import Swiper from 'react-native-swiper';
 import { images, albums } from '../../data/data'
 import CustomFooter from '../../Components/CustomFooter/Footer';
@@ -11,42 +11,50 @@ import { connect } from 'react-redux';
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
-const WallPaper = ({ navigation, wallpapers }) => {
+const WallPaper = ({ navigation, wallpaper }) => {
     const [opacity, setOpacity] = useState(0.7);
     // useEffect(() => {
 
     //     return () => clearInterval(t);
     // }, [opacity]);
-    const wallpaper = navigation.getParam('wallpaper')
+    const wallpaperIndex = navigation.getParam('wallpaperIndex')
+    const currentTab = navigation.getParam('currentTab')
     const album = navigation.getParam('album')
 
     useEffect(() => {
-        const intervalId = setInterval(() => {  //assign interval to a variaable to clear it
-            if (opacity > 0) {
-                console.log("OPA", opacity)
-                setOpacity(opacity - 0.3)
-            }
-        }, 5)
+        // const intervalId = setInterval(() => {  //assign interval to a variaable to clear it
+        //     if (opacity > 0) {
+        //         console.log("OPA", opacity)
+        //         setOpacity(opacity - 0.3)
+        //     }
+        // }, 5)
 
-        return () => clearInterval(intervalId); //This is important
-
+        // return () => clearInterval(intervalId); //This is important
+        setTimeout(() => {
+            setOpacity(0)
+        }, 700)
     }, [opacity])
     return (
         <View style={{ flex: 1 }}>
             {/* <CustomHeader leftButton={() => navigation.goBack()} istransparent={true} ishome={false} icon={'arrow-back'} /> */}
+            {/* {console.log(currentTab, wallpaperIndex)} */}
             <Swiper
-                index={wallpaper}
+                index={wallpaperIndex}
                 containerStyle={{ flex: 1, borderWidth: 0, backgroundColor: colors.background }}
                 loadMinimal={true}
-                loadMinimalSize={0}
+                loadMinimalSize={1}
                 autoplay={false}
                 loop={false}
+                loadMinimalLoader={<ActivityIndicator color={colors.highlight}/>} 
                 showsPagination={false}
                 scrollEnabled={true}>
-                {wallpapers.map(image => (
-                    <TouchableWithoutFeedback onPress={() => setOpacity(0.7)}>
-                    <FastImage source={{ uri: image.url }} style={{ width, height }} />
-                </TouchableWithoutFeedback>))}
+                {wallpaper[currentTab].map(image => (
+                    <TouchableWithoutFeedback key={image} onPress={() => setOpacity(0.7)}>
+                        <FastImage source={{
+                            uri: image.url,
+                            priority: FastImage.priority.high,
+                        }} style={{ width, height }} />
+                    </TouchableWithoutFeedback>))}
             </Swiper>
             <TouchableOpacity style={styles.header} onPress={() => navigation.goBack()}>
                 <Icon name='arrow-back' style={{ color: 'white' }} />
@@ -93,10 +101,10 @@ const styles = StyleSheet.create({
     },
     header: {
         // backgroundColor:"green",
-        width:40,
+        width: 40,
         // alignContent:'center',
-        alignItems:'center',
-        justifyContent:'center',
+        alignItems: 'center',
+        justifyContent: 'center',
         position: 'absolute',
         bottom: "93%",
         left: "5%",
@@ -150,7 +158,7 @@ const styles = StyleSheet.create({
     }
 })
 
-const mapStateToProps = ({ wallpaper: { wallpapers } }) => ({
-    wallpapers
+const mapStateToProps = ({ wallpaper }) => ({
+    wallpaper
 })
 export default connect(mapStateToProps)(WallPaper)

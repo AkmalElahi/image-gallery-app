@@ -10,8 +10,21 @@ const searchWallpapers = () => ({
     type: wallpaperActionTypes.SEARCH_WALLPAPER_REQUEST
 })
 
-const getWallpaperSuccess = wallpaper => ({
-    type: wallpaperActionTypes.GET_WALLPAPER_SUCCESS,
+const getNewWallpaperSuccess = wallpaper => ({
+    type: wallpaperActionTypes.GET_NEW_WALLPAPER_SUCCESS,
+    payload: wallpaper
+})
+
+const getFeaturedWallpaperSuccess = wallpaper => ({
+    type: wallpaperActionTypes.GET_FEATURED_WALLPAPER_SUCCESS,
+    payload: wallpaper
+})
+const getPopularWallpaperSuccess = wallpaper => ({
+    type: wallpaperActionTypes.GET_POPULAR_WALLPAPER_SUCCESS,
+    payload: wallpaper
+})
+const getRandomWallpaperSuccess = wallpaper => ({
+    type: wallpaperActionTypes.GET_RANDOM_WALLPAPER_SUCCESS,
     payload: wallpaper
 })
 
@@ -32,8 +45,8 @@ const getWallpaperFailure = error => ({
 export const getWallpaperMiddleware = (data) => {
     return async dispatch => {
         try {
-            let url = data.type === 'search' ? `${Path.imagesUrl}?w=${data.type}&q=${data.query}` : `${Path.imagesUrl}?w=${data.type}`
-            console.log("URL", url)
+            let url = data.type === 'search' ? `${Path.imagesUrl}?w=${data.type}&q=${data.query}&page=${data.page}` : `${Path.imagesUrl}?w=${data.type}&page=${data.page}`
+            // console.log("URL", url)
             if (data.type === 'search') {
                 dispatch(searchWallpapers())
             }
@@ -41,12 +54,29 @@ export const getWallpaperMiddleware = (data) => {
                 dispatch(getWallpaper())
             }
             const response = await axios.get(url)
-            console.log("GET WALLPAPER RESPONSE", response.data)
-            if (data.type === 'search') {
-                dispatch(searchWallpaperSuccess(response.data))
-            }
-            else {
-                dispatch(getWallpaperSuccess(response.data))
+            // console.log("GET WALLPAPER RESPONSE", response.data)
+            // if (data.type === 'search') {
+            //     dispatch(searchWallpaperSuccess(response.data))
+            // }
+            // else {
+            //     dispatch(getWallpaperSuccess(response.data))
+            // }
+            switch (data.type) {
+                case 'search':
+                    dispatch(searchWallpaperSuccess(response.data))
+                    return
+                case 'new':
+                    dispatch(getNewWallpaperSuccess(response.data))
+                    return
+                case 'featured':
+                    dispatch(getFeaturedWallpaperSuccess(response.data))
+                    return
+                case 'popular':
+                    dispatch(getPopularWallpaperSuccess(response.data))
+                    return
+                case 'random':
+                    dispatch(getRandomWallpaperSuccess(response.data))
+                    return
             }
         } catch (error) {
             console.log(error)

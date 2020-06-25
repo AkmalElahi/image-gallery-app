@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, { useEffect } from 'react';
+import React, { createRef } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -30,7 +30,36 @@ import Home from './src/Screens/Home/Home';
 import WallPaper from './src/Screens/Wallpaper/wallpaper';
 import AppContainer from './src/Navigation/Navigation'
 import { colors } from './src/configs/colors';
+import CustomFooter from './src/Components/CustomFooter/Footer';
+import NavigaationService from './src/Navigation/NavigaationService';
+const navigation = React.createRef()
+// let currentRoute = 'home'
+// function _getCurrentRouteName(navState) {
 
+//   if (navState.hasOwnProperty('index')) {
+//     _getCurrentRouteName(navState.routes[navState.index])
+//   } else {
+//     currentRoute = navState.routeName
+//     console.log("Current Route Name:", navState.routeName)
+//     // can then save this to the state (I used redux)
+//     // store.dispatch(setCurrentRouteName(navState.routeName))
+//   }
+
+// }
+let currentRouteName = 'home'
+function getActiveRouteName(navigationState) {
+  if (!navigationState) {
+    return null;
+  }
+  const route = navigationState.routes[navigationState.index];
+  // dive into nested navigators
+  if (route.routes) {
+    return getActiveRouteName(route);
+  }
+  console.log(route.routeName)
+  // return route.routeName;
+  
+}
 const App = () => {
   return (
     <Provider store={store}>
@@ -39,7 +68,19 @@ const App = () => {
           <StatusBar barStyle="light-content" backgroundColor={colors.background} />
           {/* <WallPaper/> */}
           {/* <Home/> */}
-          <AppContainer />
+          <AppContainer ref={navigatorRef => {
+            NavigaationService.setTopLevelNavigator(navigatorRef);
+          }}
+            // onNavigationStateChange={(prevState, newState) => {
+            //   _getCurrentRouteName(newState)
+            // }} 
+            // onNavigationStateChange={(prevState, currentState, action) => {
+            //   getActiveRouteName(currentState);
+            //   getActiveRouteName(prevState);
+
+            // }}
+          />
+          {/* <CustomFooter /> */}
         </>
       </PersistGate>
     </Provider>

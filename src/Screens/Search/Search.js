@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, TextInput, TouchableOpacity, FlatList, Dimensions } from 'react-native';
+import { View, TextInput, TouchableOpacity, FlatList, Dimensions, ActivityIndicator } from 'react-native';
 import { Text, Header, Left, Icon, Body, Input, Right } from 'native-base';
 import { colors } from '../../configs/colors';
 import CustomFooter from '../../Components/CustomFooter/Footer';
@@ -7,6 +7,8 @@ import WallpaperTab from '../../Components/WallpaperTab/WallpaperTab';
 import { connect } from 'react-redux';
 import { getWallpaperMiddleware, clearSearch } from '../../redux/wallpapers/wallpaper.actions';
 import FastImage from 'react-native-fast-image';
+import { searchHistory, setSearchHistory } from '../../redux/SearchHistory/searchHistory.actions';
+import { setActiveRoute } from '../../redux/activeRoute/activeRoute.actions';
 const { width, height } = Dimensions.get('window')
 // const historyContainer = ({ item, onPress }) => (
 //     <View style={{ backgroundColor: colors.background, flex: 1, width: '100%' }}>
@@ -35,15 +37,20 @@ const ImageContainer = ({ item }, navigation, images) => (
         />
     </TouchableOpacity>
 )
-const SearchScreen = ({ navigation, searchWallpapers, clearSearch, wallpaper }) => {
+const SearchScreen = ({ navigation, searchWallpapers, clearSearch, wallpaper, getHistory, history, setHistory, setActiveRoute }) => {
     const [query, setQuery] = useState('')
     const [submitted, submit] = useState(false)
 
     useEffect(() => {
         if (submitted === true && !!query.length) {
+            setHistory(query)
             searchWallpapers({ type: 'search', query: query })
         }
     }, [submitted]);
+    useEffect(() => {
+        getHistory(),
+        setActiveRoute(navigation.state.routeName)
+    }, []);
 
 
     return (
@@ -60,7 +67,8 @@ const SearchScreen = ({ navigation, searchWallpapers, clearSearch, wallpaper }) 
                 <Left style={{ flex: 1, alignItems: 'center' }}>
                     <Icon onPress={() => {
                         clearSearch()
-                        navigation.goBack()
+                        navigation.goBack(),
+                        setActiveRoute('home')
                     }} name='arrow-back' />
                 </Left>
                 <Body style={{ flex: 5 }}>
@@ -85,7 +93,7 @@ const SearchScreen = ({ navigation, searchWallpapers, clearSearch, wallpaper }) 
                 </Right>
             </Header>
             {/* <WallpaperTab /> */}
-            <FlatList
+            {!wallpaper.isloading ? <FlatList
                 scrollEventThrottle={16}
                 scrollEnabled={true}
                 nestedScrollEnabled={true}
@@ -96,38 +104,46 @@ const SearchScreen = ({ navigation, searchWallpapers, clearSearch, wallpaper }) 
                 numColumns={3}
                 renderItem={(item) => ImageContainer(item, navigation, wallpaper.wallpapers)}
                 keyExtractor={(item, index) => index}
-            />
-            <CustomFooter isActive={'search'} navigation={navigation} />
+            /> : <View style={{ backgroundColor: colors.background, flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <ActivityIndicator color={colors.highlight} />
+                </View>}
             <View style={{ position: 'absolute', top: 55, left: 0, right: 0 }}>
                 {!submitted && <FlatList
                     horizontal={false}
-                    style={{ backgroundColor: colors.background }}
-                    data={['superman', 'batman', 'car', 'nature']}
+                    scrollEnabled={false}
+                    initialNumToRender={5}
+                    maxToRenderPerBatch={5}
+                    style={{ backgroundColor: colors.background, maxHeight:320 }}
+                    data={history}
                     renderItem={({ item }) => {
                         return (
                             <View style={{ backgroundColor: colors.background, flex: 1, width: '100%' }}>
                                 <TouchableOpacity onPress={() => {
-                                    setQuery(item),
+                                    setQuery(item.query),
                                         submit(true)
                                 }} style={{ flexDirection: 'row', padding: 10, alignItems: 'center' }}>
                                     <Icon name='md-refresh' style={{ color: '#fff', padding: 5, fontSize: 35 }} />
-                                    <Text style={{ color: 'white', paddingLeft: 10 }}>{item} </Text>
+                                    <Text style={{ color: 'white', paddingLeft: 10 }}>{item.query} </Text>
                                 </TouchableOpacity>
                             </View>
                         )
                     }
                     }
-                    keyExtractor={(item) => item}
+                    keyExtractor={(item) => item.id}
                 />}
             </View>
         </View>
     )
 }
-const mapStateToProps = ({ wallpaper }) => ({
-    wallpaper
+const mapStateToProps = ({ wallpaper, search: { history } }) => ({
+    wallpaper,
+    history
 })
 const mapDispatchToProps = dispatch => ({
     searchWallpapers: data => dispatch(getWallpaperMiddleware(data)),
-    clearSearch: () => dispatch(clearSearch())
+    clearSearch: () => dispatch(clearSearch()),
+    getHistory: () => dispatch(searchHistory()),
+    setHistory: data => dispatch(setSearchHistory(data)),
+    setActiveRoute: data => dispatch(setActiveRoute(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(SearchScreen)
