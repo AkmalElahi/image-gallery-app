@@ -278,6 +278,13 @@ const HomeTabs = createBottomTabNavigator({
             activeRoute: 'home'
         }
     },
+    albumGrid: {
+        screen: AlbumGrid,
+        navigationOptions: {
+            headerShown: false,
+            gestureEnabled: false
+        }
+    },
     
 }, {
     tabBarComponent: Tabbar
@@ -301,13 +308,13 @@ const AppNavigator = createStackNavigator({
             gestureEnabled: false,
         }
     },
-    albumGrid: {
-        screen: AlbumGrid,
-        navigationOptions: {
-            headerShown: false,
-            gestureEnabled: false
-        }
-    },
+    // albumGrid: {
+    //     screen: AlbumGrid,
+    //     navigationOptions: {
+    //         headerShown: false,
+    //         gestureEnabled: false
+    //     }
+    // },
 },
     {
         initialRouteName: 'home',

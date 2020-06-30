@@ -13,6 +13,7 @@ const INITIAL_STATE = {
     random: [],
     popular: [],
     searchedWallpapers: [],
+    albumGrid: [],
     isloading: false,
     message: '',
     status: ''
@@ -24,6 +25,7 @@ const wallpaperReducer = (state = INITIAL_STATE, action) => {
             return Object.assign({
                 ...state,
                 isloading: true,
+                albumGrid:[],
                 status: "get wallpaper request"
             })
         case wallpaperActionTypes.GET_NEW_WALLPAPER_SUCCESS:
@@ -87,12 +89,13 @@ const wallpaperReducer = (state = INITIAL_STATE, action) => {
                 searchedWallpapers: [],
                 status: "clear search"
             })
-        case wallpaperActionTypes.CHANGE_MANAGER_STATUS_FAILURE:
+        case wallpaperActionTypes.GET_ALBUM_GRID_SUCCESS:
+            // console.log("PAYLOAD IN ALBUMS", action.payload)
             return Object.assign({
                 ...state,
                 isloading: false,
-                status: "change manager status falilure",
-                message: action.payload
+                albumGrid: action.payload,
+                status: "get albums grid success",
             })
         default:
             return state

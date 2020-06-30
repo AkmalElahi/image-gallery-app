@@ -3,17 +3,19 @@ import { View, TouchableOpacity } from 'react-native';
 import WallpaperTab from '../WallpaperTab/WallpaperTab';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { selectAlbumGrid } from '../../redux/albums/albums.selector';
-import { getAlbumGrid } from '../../redux/albums/albums.actions';
+import { selectAlbumGrid } from '../../redux/wallpapers/wallpaper.selector';
+import { getAlbumGrid } from '../../redux/wallpapers/wallpaper.actions';
 import { colors } from '../../configs/colors';
 import { Header, Title, Body, Text, Icon } from 'native-base';
-const AlbumsGrid = ({ wallpapers, getAlbumGrid, navigation }) => {
+import { setActiveRoute } from '../../redux/activeRoute/activeRoute.actions';
+const AlbumsGrid = ({ wallpapers, getAlbumGrid, navigation, setActiveRoute }) => {
     const slug = navigation.getParam('slug')
     const title = navigation.getParam('title')
 
     useEffect(() => {
         getAlbumGrid({ slug });
-    }, []);
+        setActiveRoute('home')
+    }, [slug, title]);
     console.log('RENDERED GRID', slug)
     return (
         <View style={{ flex: 1, backgroundColor: `rgba(${colors.backgroundRgba},${1})` }}>
@@ -22,7 +24,7 @@ const AlbumsGrid = ({ wallpapers, getAlbumGrid, navigation }) => {
                     <Title>slug</Title>
                 </Body>
             </Header> */}
-            <WallpaperTab wallpapers={wallpapers} />
+            <WallpaperTab wallpapers={wallpapers} currentTab='albumGrid' navigation={navigation} />
             <View style={{
                 backgroundColor: `rgba(${colors.backgroundRgba},${0.9})`,
                 position: 'absolute',
@@ -54,6 +56,7 @@ const mapStateToProps = createStructuredSelector({
     // albumsLoading: selectalbumLoading
 })
 const mapDispatchToProps = dispatch => ({
-    getAlbumGrid: data => dispatch(getAlbumGrid(data))
+    getAlbumGrid: data => dispatch(getAlbumGrid(data)),
+    setActiveRoute: data => dispatch(setActiveRoute(data))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(AlbumsGrid)

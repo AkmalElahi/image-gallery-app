@@ -37,6 +37,11 @@ export const clearSearch = () => ({
     type: wallpaperActionTypes.CLEAR_SEARCH,
 })
 
+const getAlbumGridSuccess = grid => ({
+    type: wallpaperActionTypes.GET_ALBUM_GRID_SUCCESS,
+    payload: grid
+})
+
 const getWallpaperFailure = error => ({
     type: wallpaperActionTypes.GET_WALLPAPER_FAILURE,
     payload: error
@@ -80,6 +85,20 @@ export const getWallpaperMiddleware = (data) => {
             }
         } catch (error) {
             console.log(error)
+            dispatch(getWallpaperFailure({ success: false, errorMessage: "Something went wrong please try again" }))
+        }
+    }
+}
+
+export const getAlbumGrid = (data) => {
+    return async dispatch => {
+        try {
+            dispatch(getWallpaper())
+            const response = await axios.get(`${Path.imagesUrl}?w=kw&slug=${data.slug}`)
+            // console.log("GET ALBUMS URl", `${Path.albumUrl}?w=${data.type}&page=${data.page}`)
+            dispatch(getAlbumGridSuccess(response.data))
+        } catch (error) {
+            // console.log(error)
             dispatch(getWallpaperFailure({ success: false, errorMessage: "Something went wrong please try again" }))
         }
     }

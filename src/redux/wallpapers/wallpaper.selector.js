@@ -19,7 +19,10 @@ export const selectwallpaperPopular = createSelector(
     [selectwallpaper],
     wallpaper => wallpaper.popular
 )
-
+export const selectAlbumGrid = createSelector(
+    [selectwallpaper],
+    wallpaper => wallpaper.albumGrid
+)
 export const selectwallpaperLoading = createSelector(
     [selectwallpaper],
     wallpaper => wallpaper.isloading
