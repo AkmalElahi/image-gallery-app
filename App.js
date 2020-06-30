@@ -32,6 +32,7 @@ import AppContainer from './src/Navigation/Navigation'
 import { colors } from './src/configs/colors';
 import CustomFooter from './src/Components/CustomFooter/Footer';
 import NavigaationService from './src/Navigation/NavigaationService';
+import { Root } from 'native-base';
 const navigation = React.createRef()
 // let currentRoute = 'home'
 // function _getCurrentRouteName(navState) {
@@ -58,32 +59,23 @@ function getActiveRouteName(navigationState) {
   }
   console.log(route.routeName)
   // return route.routeName;
-  
+
 }
 const App = () => {
   return (
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <>
-          <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-          {/* <WallPaper/> */}
-          {/* <Home/> */}
-          <AppContainer ref={navigatorRef => {
-            NavigaationService.setTopLevelNavigator(navigatorRef);
-          }}
-            // onNavigationStateChange={(prevState, newState) => {
-            //   _getCurrentRouteName(newState)
-            // }} 
-            // onNavigationStateChange={(prevState, currentState, action) => {
-            //   getActiveRouteName(currentState);
-            //   getActiveRouteName(prevState);
-
-            // }}
-          />
-          {/* <CustomFooter /> */}
-        </>
-      </PersistGate>
-    </Provider>
+    <Root>
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <>
+            <StatusBar barStyle="light-content" backgroundColor={colors.background} />
+            <AppContainer ref={navigatorRef => {
+              NavigaationService.setTopLevelNavigator(navigatorRef);
+            }}
+            />
+          </>
+        </PersistGate>
+      </Provider>
+    </Root>
   );
 };
 

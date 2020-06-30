@@ -1,26 +1,112 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, FlatList, Image, Dimensions, StyleSheet, ImageBackground, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
+import { View, Text, BackHandler, Dimensions, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator, PermissionsAndroid, Platform, TextBase, Linking } from 'react-native';
 import Swiper from 'react-native-swiper';
-import { images, albums } from '../../data/data'
-import CustomFooter from '../../Components/CustomFooter/Footer';
-import CustomHeader from '../../Components/CustomHeader/Header';
-import { Icon } from 'native-base';
+import { Icon, Toast } from 'native-base';
 import { colors } from '../../configs/colors';
 import FastImage from 'react-native-fast-image';
 import { connect } from 'react-redux';
+import ManageWallpaper, { TYPE } from 'react-native-manage-wallpaper';
+// import CameraRoll from "@react-native-community/cameraroll";
+import RNFetchBlob from 'rn-fetch-blob';
+import SetAsModal from '../../Components/SetWallpaperModal/SetWallpaperModal';
+import InfoModal from '../../Components/SetWallpaperModal/InfoModal';
+import ReportModal from '../../Components/SetWallpaperModal/ReportModal';
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
 const WallPaper = ({ navigation, wallpaper }) => {
     const [opacity, setOpacity] = useState(0.7);
-    // useEffect(() => {
-
-    //     return () => clearInterval(t);
-    // }, [opacity]);
+    const [showMore, setShowMore] = useState(false)
+    const [modalVisible, setModal] = useState(false);
+    const [infoModal, showInfoModal] = useState(false);
+    const [reportModal, showReportModal] = useState(false);
+    const [reason, setReason] = useState('');
+    const [wallpapericonColor, setColor] = useState('white');
+    const [settingWallPaper, setLoader] = useState(false);
     const wallpaperIndex = navigation.getParam('wallpaperIndex')
     const currentTab = navigation.getParam('currentTab')
-    const album = navigation.getParam('album')
+    const setWallpaper = () => {
+        setOpacity(0.7)
+        setModal(true)
+        setColor(colors.highlight)
+    }
+    const closeModal = () => {
+        setModal(false)
+        showInfoModal(false)
+        showReportModal(false)
+        setColor('white')
+        // setLoader(false)
+    }
+    const OnsetWallpaper = () => {
+        setLoader(false)
+        Toast.show({
+            text: "Wallpaper set successfully",
+            textStyle: { textAlign: "center", color: "black", },
+            style: { marginBottom: '30%', width: "60%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
+            position: "bottom",
+            // type: 'success',
+            duration: 2000
+        })
+        setTimeout(() => BackHandler.exitApp(), 1200)
+    }
+    const _setWallpaper = (type) => {
+        closeModal()
+        ManageWallpaper.setWallpaper({
+            uri: wallpaper[currentTab][wallpaperIndex].url,
+        }, () => OnsetWallpaper(), TYPE[type]);
+    };
+    async function hasAndroidPermission() {
+        const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
 
+        const hasPermission = await PermissionsAndroid.check(permission);
+        if (hasPermission) {
+            return true;
+        }
+
+        const status = await PermissionsAndroid.request(permission);
+        return status === 'granted';
+    }
+
+    const getExtention = (filename) => {
+        return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename) :
+            undefined;
+    }
+    const savePicture = async () => {
+        if (Platform.OS === "android" && !(await hasAndroidPermission())) {
+            return;
+        }
+        var date = new Date();
+        var image_URL = wallpaper[currentTab][wallpaperIndex].url;
+        var ext = getExtention(image_URL);
+        ext = "." + ext[0];
+        const { config, fs } = RNFetchBlob;
+        let PictureDir = fs.dirs.PictureDir
+        let options = {
+            fileCache: true,
+            addAndroidDownloads: {
+                useDownloadManager: true,
+                notification: true,
+                path: PictureDir + "/image_" + Math.floor(date.getTime()
+                    + date.getSeconds() / 2) + ext,
+                description: 'Image'
+            }
+        }
+        config(options).fetch('GET', image_URL).then((res) => {
+            Toast.show({
+                text: "Wallpaper downloaded successfully",
+                textStyle: { textAlign: "center", color: "black", },
+                style: { marginBottom: '30%', width: "80%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
+                position: "bottom",
+                // type: 'success',
+                duration: 2000
+            })
+
+        });
+        // CameraRoll.saveToCameraRoll(wallpaper[currentTab][wallpaperIndex].url);
+    };
+    // useEffect( () => {
+    //     reason === 'Copyrighted' && Linking.openURL('http://google.com/')
+    // },[reason])
     useEffect(() => {
         // const intervalId = setInterval(() => {  //assign interval to a variaable to clear it
         //     if (opacity > 0) {
@@ -30,10 +116,19 @@ const WallPaper = ({ navigation, wallpaper }) => {
         // }, 5)
 
         // return () => clearInterval(intervalId); //This is important
-        setTimeout(() => {
-            setOpacity(0)
-        }, 700)
-    }, [opacity])
+        if (!modalVisible) {
+            setTimeout(() => {
+                setOpacity(0)
+            }, 700)
+        }
+    }, [opacity, modalVisible])
+    const handleViews = () => {
+        showMore ? setShowMore(false) : setOpacity(0.7)
+    }
+    const onOk = () => {
+        showReportModal(false)
+        reason === 'Copyrighted' && Linking.openURL('http://google.com/')
+    }
     return (
         <View style={{ flex: 1 }}>
             {/* <CustomHeader leftButton={() => navigation.goBack()} istransparent={true} ishome={false} icon={'arrow-back'} /> */}
@@ -45,21 +140,27 @@ const WallPaper = ({ navigation, wallpaper }) => {
                 loadMinimalSize={1}
                 autoplay={false}
                 loop={false}
-                loadMinimalLoader={<ActivityIndicator color={colors.highlight}/>} 
+                onTouchStart={handleViews}
+                loadMinimalLoader={<ActivityIndicator color={colors.highlight} />}
                 showsPagination={false}
                 scrollEnabled={true}>
                 {wallpaper[currentTab].map(image => (
-                    <TouchableWithoutFeedback key={image} onPress={() => setOpacity(0.7)}>
+                    <TouchableWithoutFeedback key={image} onPress={handleViews}>
                         <FastImage source={{
                             uri: image.url,
                             priority: FastImage.priority.high,
                         }} style={{ width, height }} />
                     </TouchableWithoutFeedback>))}
             </Swiper>
-            <TouchableOpacity style={styles.header} onPress={() => navigation.goBack()}>
-                <Icon name='arrow-back' style={{ color: 'white' }} />
-            </TouchableOpacity>
-            <View style={styles.iconsContainer}>
+            <View style={styles.header}>
+                <TouchableOpacity style={styles.headerBtn} onPress={() => navigation.goBack()}>
+                    <Icon name='arrow-back' style={{ color: 'white' }} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.headerBtn} onPress={() => setShowMore(true)}>
+                    <Icon name='md-more' style={{ color: 'white' }} />
+                </TouchableOpacity>
+            </View>
+            {!modalVisible && !settingWallPaper && < View style={styles.iconsContainer}>
                 <TouchableOpacity style={{
                     backgroundColor: `rgba(${colors.backgroundRgba},${opacity})`,
                     ...styles.fadeButton
@@ -67,19 +168,19 @@ const WallPaper = ({ navigation, wallpaper }) => {
                     <Icon name='md-heart-empty' style={styles.icon} />
                     {opacity > 0 && <Text style={styles.iconText}>FAVORITES</Text>}
                 </TouchableOpacity>
-                <TouchableOpacity style={{
+                <TouchableOpacity onPress={() => savePicture()} style={{
                     backgroundColor: `rgba(${colors.backgroundRgba},${opacity})`,
                     ...styles.fadeButton
                 }}>
                     <Icon name='arrow-down' style={styles.icon} />
                     {opacity > 0 && <Text style={styles.iconText}>DOWNLOAD</Text>}
                 </TouchableOpacity>
-                <TouchableOpacity style={{
+                <TouchableOpacity onPress={setWallpaper} style={{
                     backgroundColor: `rgba(${colors.backgroundRgba},${opacity})`,
                     ...styles.fadeButton
                 }}>
-                    <Icon name='md-phone-portrait' style={styles.icon} />
-                    {opacity > 0 && <Text style={styles.iconText}>WALLPAPER</Text>}
+                    <Icon name='md-phone-portrait' style={{ ...styles.icon, color: wallpapericonColor }} />
+                    {opacity > 0 && <Text style={{ ...styles.iconText, color: wallpapericonColor }}>WALLPAPER</Text>}
                 </TouchableOpacity>
                 <TouchableOpacity style={{
                     backgroundColor: `rgba(${colors.backgroundRgba},${opacity})`,
@@ -89,10 +190,26 @@ const WallPaper = ({ navigation, wallpaper }) => {
                     {opacity > 0 && <Text style={styles.iconText}>SHARE</Text>}
                 </TouchableOpacity>
 
-            </View>
-
+            </View>}
+            {showMore && <View style={styles.dropDown}>
+                <TouchableOpacity style={{ alignItems: 'flex-start', width: '80%' }} onPress={() => {
+                    showInfoModal(true)
+                    setShowMore(false)
+                }}>
+                    <Text style={{ textAlign: 'left' }}>Image info</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{ alignItems: 'flex-start', width: '80%' }} onPress={() => {
+                    showReportModal(true)
+                    setShowMore(false)
+                }}>
+                    <Text style={{ textAlign: 'left' }}>Report image...</Text>
+                </TouchableOpacity>
+            </View>}
+            <SetAsModal modalVisible={modalVisible} onclose={closeModal} setWallpaperFor={_setWallpaper} />
+            <InfoModal modalVisible={infoModal} onclose={closeModal} />
+            <ReportModal modalVisible={reportModal} onclose={closeModal} onOk={onOk} reportReason={reason} setReason={(reason) => setReason(reason)} />
             {/* <CustomFooter navigation={navigation} /> */}
-        </View>
+        </View >
     )
 }
 const styles = StyleSheet.create({
@@ -100,14 +217,20 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        // backgroundColor:"green",
-        width: 40,
+        height: 50,
+        flexDirection: 'row',
         // alignContent:'center',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         position: 'absolute',
-        bottom: "93%",
-        left: "5%",
+        top: height * 0.02,
+        left: "3%",
+        right: "3%"
+    },
+    headerBtn: {
+        width: 40,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     slide1: {
         flex: 1,
@@ -142,8 +265,14 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         // paddingHorizontal: 10
     },
+    // loaderContainer: {
+    //     position: 'absolute',
+    //     top: '40%'
+
+    // },
     fadeButton: {
-        width: 80,
+        width:80,
+        // height:width * 0.22,
         borderRadius: 10,
         alignItems: 'center',
         padding: 10
@@ -154,7 +283,18 @@ const styles = StyleSheet.create({
     iconText: {
         color: 'white',
         fontSize: 10,
-        fontWeight: 'bold'
+        // fontWeight: 'bold'
+    },
+    dropDown: {
+        borderRadius: 5,
+        position: 'absolute',
+        height: 80,
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        top: height * 0.03,
+        left: width * 0.60,
+        right: "2%"
     }
 })
 
