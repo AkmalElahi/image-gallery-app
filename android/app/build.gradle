@@ -129,6 +129,7 @@ android {
     }
 
     defaultConfig {
+        // multiDexEnabled true added this line after react-native-background-timer install
         applicationId "com.imagegalleryapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion

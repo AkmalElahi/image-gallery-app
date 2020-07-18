@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, { createRef } from 'react';
+import React, { useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -33,6 +33,8 @@ import { colors } from './src/configs/colors';
 import CustomFooter from './src/Components/CustomFooter/Footer';
 import NavigaationService from './src/Navigation/NavigaationService';
 import { Root } from 'native-base';
+import { getUniqueId, } from 'react-native-device-info';
+import AsyncStorage from '@react-native-community/async-storage';
 const navigation = React.createRef()
 // let currentRoute = 'home'
 // function _getCurrentRouteName(navState) {
@@ -47,21 +49,29 @@ const navigation = React.createRef()
 //   }
 
 // }
-let currentRouteName = 'home'
-function getActiveRouteName(navigationState) {
-  if (!navigationState) {
-    return null;
-  }
-  const route = navigationState.routes[navigationState.index];
-  // dive into nested navigators
-  if (route.routes) {
-    return getActiveRouteName(route);
-  }
-  console.log(route.routeName)
-  // return route.routeName;
+// let currentRouteName = 'home'
+// function getActiveRouteName(navigationState) {
+//   if (!navigationState) {
+//     return null;
+//   }
+//   const route = navigationState.routes[navigationState.index];
+//   // dive into nested navigators
+//   if (route.routes) {
+//     return getActiveRouteName(route);
+//   }
+//   console.log(route.routeName)
+//   // return route.routeName;
 
-}
+// }
+
 const App = () => {
+  const setDeviceId = async () => {
+    const deviceID = getUniqueId()
+    await AsyncStorage.setItem('deviceID', deviceID);
+  }
+  useEffect(() => {
+    setDeviceId()
+  }, []);
   return (
     <Root>
       <Provider store={store}>

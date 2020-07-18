@@ -6,6 +6,8 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
+    "apk":"cd android && ./gradlew clean && ./gradlew bundleRelease && cd .. && react-native run-android --variant=release",
+    "clean": "cd android && ./gradlew clean && cd .. && react-native run-android",
     "test": "jest",
     "lint": "eslint ."
   },
@@ -17,6 +19,7 @@
     "native-base": "^2.13.12",
     "react": "^16.13.1",
     "react-native": "0.62.2",
+    "react-native-device-info": "^5.6.1",
     "react-native-fast-image": "^8.1.5",
     "react-native-gesture-handler": "^1.6.1",
     "react-native-manage-wallpaper": "^1.1.2",

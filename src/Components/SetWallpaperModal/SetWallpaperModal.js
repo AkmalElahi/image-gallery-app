@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "rgba(0, 0, 0, 0.7)"
+        backgroundColor: "rgba(0, 0, 0, 0.6)"
     },
     modalView: {
         // paddingTop:"10%",

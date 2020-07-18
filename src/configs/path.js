@@ -1,4 +1,6 @@
+const BASE_URL = 'https://wallpapercave.com/wcapp'
 export const Path = {
-    imagesUrl: 'https://wallpapercave.com/wcapp/images',
-    albumUrl: 'https://wallpapercave.com/wcapp/albums'
+    imagesUrl: `${BASE_URL}/images`,
+    albumUrl: `${BASE_URL}/albums`,
+    actionUrl: BASE_URL
 }

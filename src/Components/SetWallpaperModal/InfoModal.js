@@ -5,7 +5,7 @@ const height = Dimensions.get('window').height
 import { colors } from '../../configs/colors';
 import { Icon } from 'native-base';
 import ImageIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-const SetAsModal = ({ modalVisible, onclose, setWallpaperFor }) => (
+const SetAsModal = ({ modalVisible, onclose, wallpaper, }) => (
     // <View style={styles.modal}>
     // </View>
     <Modal transparent={true}
@@ -19,21 +19,21 @@ const SetAsModal = ({ modalVisible, onclose, setWallpaperFor }) => (
                 <Text style={styles.text}>
                     Image info
                 </Text>
-                <View style={styles.buttonContainer} onPress={() => setWallpaperFor('HOME')}>
+                <View style={styles.buttonContainer} >
                     <Icon style={{ fontSize: 18, color: colors.iconColor }} name='md-calendar' />
-                    <Text style={{...styles.btnText, marginLeft:'9%'}} >Published:</Text><Text>3/12/20</Text>
+                    <Text style={{ ...styles.btnText, marginLeft: '9%' }} >Published: </Text><Text style={{fontWeight:'bold'}}>{wallpaper?.published?.split(' ')[0]}</Text>
                 </View >
-                <View style={styles.buttonContainer} onPress={() => setWallpaperFor('LOCK')}>
+                <View style={styles.buttonContainer} >
                     <Icon style={{ fontSize: 18, color: colors.iconColor }} name='md-document' />
-                    <Text style={styles.btnText} >Filesize:</Text><Text>2,048 Kb</Text>
+                    <Text style={styles.btnText} >Filesize: </Text><Text style={{fontWeight:'bold'}}>{wallpaper?.filesize} Kb</Text>
                 </View>
-                <View style={styles.buttonContainer} onPress={() => setWallpaperFor('BOTH')}>
+                <View style={styles.buttonContainer} >
                     <ImageIcon style={{ fontSize: 18, color: colors.iconColor }} name='image-size-select-large' />
-                    <Text style={{...styles.btnText, marginLeft:'8%'}} >Dimensions:</Text><Text>1280x2300 px</Text>
+                    <Text style={{ ...styles.btnText, marginLeft: '8%' }} >Dimensions: </Text><Text style={{fontWeight:'bold'}}>{wallpaper?.width}x{wallpaper?.height} px</Text>
                 </View>
-                <View style={styles.buttonContainer} onPress={() => setWallpaperFor('BOTH')}>
+                <View style={styles.buttonContainer} >
                     <Icon style={{ fontSize: 18, color: colors.iconColor }} name='md-image' />
-                    <Text style={styles.btnText} >Image type:</Text><Text>JPEG</Text>
+                    <Text style={styles.btnText} >Image type: </Text><Text style={{fontWeight:'bold'}}>{wallpaper?.type}</Text>
                 </View>
             </View>
         </TouchableOpacity>
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: "rgba(0, 0, 0, 0.7)"
+        backgroundColor: "rgba(0, 0, 0, 0.6)"
     },
     modalView: {
         // paddingTop:"10%",
