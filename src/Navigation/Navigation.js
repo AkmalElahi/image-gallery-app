@@ -39,17 +39,18 @@ const onScroll = Animated.event(
         // }
     }
 )
+let globalnavigation = null
+export const navigator = (router, route, activeRouteToBe, activeRoute) => {
+    activeRouteToBe !== activeRoute && (
+        globalnavigation.setParams({ activeRoute: activeRouteToBe,  }),
+        router(route)
+    )
+}
 const Tabbar = ({ navigation }) => {
-    const navigator = (router, route, activeRouteToBe) => {
-        router(route),
-            activeRouteToBe !== activeRoute && (
-                navigation.setParams({ activeRoute: activeRouteToBe })
-            )
-
-    }
+    globalnavigation = navigation
     const [activeRoute, setActiveRoute] = useState('home');
     useEffect(() => {
-        console.log("ROUTE", navigation.state.params)
+        // console.log("ROUTE", navigation.state.routes[1])
         const route = navigation.getParam('activeRoute')
         route && (setActiveRoute(route))
     }, [navigation.state.params])
@@ -94,13 +95,13 @@ const Tabbar = ({ navigation }) => {
                 </Button>
                 <Button
                     // onPress={() => { changeRoute(NavigaationService.navigate, 'home') }}
-                    onPress={() => navigator(navigation.navigate, 'tabs', 'home')}
+                    onPress={() => navigator(navigation.navigate, 'tabs', 'home', activeRoute)}
                 >
                     <Icon style={{ color: `${activeRoute === 'home' ? colors.highlight : '#FFF'}` }} name='md-home' />
                 </Button>
                 <Button
                     // onPress={() => { changeRoute(NavigaationService.navigate, 'search') }}
-                    onPress={() => navigator(navigation.navigate, 'search', 'search')}
+                    onPress={() => navigator(navigation.navigate, 'search', 'search', activeRoute)}
                 >
                     <Icon style={{ color: `${activeRoute === 'search' ? colors.highlight : '#FFF'}` }} name='md-search' />
                 </Button>
@@ -194,7 +195,7 @@ const TabNavigator = createMaterialTopTabNavigator({
         screen: NewTab,
         // navigationOptions: {
         //     tabBarLabel: <Text style={{ textAlign: 'center',  backgroundColor:"green" }}>NEW</Text>,
-            
+
         // }
     },
     Featured: FeaturedTab,
@@ -227,9 +228,9 @@ const TabNavigator = createMaterialTopTabNavigator({
             tabStyle: {
                 width: 100,
                 // width:100,
-                alignSelf:'center',
+                alignSelf: 'center',
                 // backgroundColor:"green",
-                padding:0,
+                padding: 0,
                 paddingHorizontal: 5,
             },
             // indicatorStyle:{
@@ -247,8 +248,8 @@ const TabNavigator = createMaterialTopTabNavigator({
                 // elevation: 3,
                 // borderTopColor: 'transparent',
                 backgroundColor: colors.background,
-                width:Dimensions.get('window').width,
-                justifyContent:'flex-start',
+                width: Dimensions.get('window').width,
+                justifyContent: 'flex-start',
                 // borderTopLeftRadius: 20,
                 // borderTopRightRadius: 20,
                 // height: 52
@@ -267,7 +268,7 @@ const HomeTabs = createBottomTabNavigator({
         navigationOptions: {
             headerShown: false,
             gestureEnabled: false,
-            activeRoute: 'home'
+            // activeRoute: 'home'
         }
     },
     search: {
@@ -275,7 +276,7 @@ const HomeTabs = createBottomTabNavigator({
         navigationOptions: {
             headerShown: false,
             gestureEnabled: false,
-            activeRoute: 'home'
+            // activeRoute: 'search'
         }
     },
     albumGrid: {
@@ -285,7 +286,7 @@ const HomeTabs = createBottomTabNavigator({
             gestureEnabled: false
         }
     },
-    
+
 }, {
     tabBarComponent: Tabbar
 })
@@ -308,6 +309,7 @@ const AppNavigator = createStackNavigator({
             gestureEnabled: false,
         }
     },
+
     // albumGrid: {
     //     screen: AlbumGrid,
     //     navigationOptions: {

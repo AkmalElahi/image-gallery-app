@@ -78,7 +78,6 @@ const NewTab = ({ navigation, albums, wallpapers, getAlbums, getWallpapers, curr
 
         // </Tabs>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
-            {console.log("ROUTE IN NEW")}
             <View style={{ height: 46, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.background, padding: 0 }}>
                 <Text onPress={() => {
                     setActive('wallpaper')
@@ -105,11 +104,11 @@ const NewTab = ({ navigation, albums, wallpapers, getAlbums, getWallpapers, curr
                         setPage={setAlbumPage}
                     />
                 )}
-            {(!!wallpapers.length && !!albums.length && (wallpapersLoading || albumsLoading) && (wapllpaperPage > 1 || albumPage > 1)) && <View style={{
+            {/* {(!!wallpapers.length && !!albums.length && (wallpapersLoading || albumsLoading) && (wapllpaperPage > 1 || albumPage > 1)) && <View style={{
                 height: 50,
                 justifyContent: 'center',
                 alignItems: 'center'
-            }}><ActivityIndicator color={colors.highlight} /></View>}
+            }}><ActivityIndicator color={colors.highlight} /></View>} */}
         </View>
 
     )
@@ -133,8 +132,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = createStructuredSelector({
     wallpapers: selectwallpaperNew,
     albums: selectAlbumNew,
-    wallpapersLoading: selectwallpaperLoading,
-    albumsLoading: selectalbumLoading
+    // wallpapersLoading: selectwallpaperLoading,
+    // albumsLoading: selectalbumLoading
 })
 const mapDispatchToProps = dispatch => ({
     getAlbums: data => dispatch(getAlbumMiddleware(data)),

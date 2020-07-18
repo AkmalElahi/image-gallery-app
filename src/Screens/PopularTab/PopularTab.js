@@ -106,11 +106,11 @@ const PopularTab = ({ navigation, onScroll, getAlbums, getWallpapers, currentTab
                         setPage={setAlbumPage}
                     />
                 )}
-            {(!!wallpapers.length && wallpapersLoading || albumsLoading) && (wapllpaperPage > 1 || albumPage > 1) && <View style={{
+            {/* {(!!wallpapers.length && wallpapersLoading || albumsLoading) && (wapllpaperPage > 1 || albumPage > 1) && <View style={{
                 height: 50,
                 justifyContent: 'center',
                 alignItems: 'center'
-            }}><ActivityIndicator color={colors.highlight} /></View>}
+            }}><ActivityIndicator color={colors.highlight} /></View>} */}
             {/* <CustomFooter isActive='home' /> */}
         </View>
 
@@ -135,8 +135,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = createStructuredSelector({
     wallpapers: selectwallpaperPopular,
     albums: selectAlbumPopular,
-    wallpapersLoading: selectwallpaperLoading,
-    albumsLoading: selectalbumLoading
+    // wallpapersLoading: selectwallpaperLoading,
+    // albumsLoading: selectalbumLoading
 })
 const mapDispatchToProps = dispatch => ({
     getAlbums: data => dispatch(getAlbumMiddleware(data)),

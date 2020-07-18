@@ -1,13 +1,15 @@
 import { wallpaperActionTypes } from './wallpaper.actions.types'
 import { Path } from '../../configs/path'
 import axios from 'axios'
+import AsyncStorage from '@react-native-community/async-storage'
 
 const getWallpaper = () => ({
     type: wallpaperActionTypes.GET_WALLPAPER_REQUEST
 })
 
-const searchWallpapers = () => ({
-    type: wallpaperActionTypes.SEARCH_WALLPAPER_REQUEST
+const searchWallpapers = payload => ({
+    type: wallpaperActionTypes.SEARCH_WALLPAPER_REQUEST,
+    payload
 })
 
 const getNewWallpaperSuccess = wallpaper => ({
@@ -46,26 +48,31 @@ const getWallpaperFailure = error => ({
     type: wallpaperActionTypes.GET_WALLPAPER_FAILURE,
     payload: error
 })
+const initiateUserAction = () => ({
+    type: wallpaperActionTypes.USER_ACTION_ON_WALLPAER,
+})
+const userActionSuccess = () => ({
+    type: wallpaperActionTypes.USER_ACTION_ON_WALLPAER_SUCCESS,
+})
+
+const userActionFail = error => ({
+    type: wallpaperActionTypes.USER_ACTION_ON_WALLPAER_FAIL,
+    payload: error
+})
+
 
 export const getWallpaperMiddleware = (data) => {
     return async dispatch => {
         try {
             let url = data.type === 'search' ? `${Path.imagesUrl}?w=${data.type}&q=${data.query}&page=${data.page}` : `${Path.imagesUrl}?w=${data.type}&page=${data.page}`
-            // console.log("URL", url)
+            // console.log("SEARCH URL", url)
             if (data.type === 'search') {
-                dispatch(searchWallpapers())
+                dispatch(searchWallpapers(data))
             }
             else {
                 dispatch(getWallpaper())
             }
             const response = await axios.get(url)
-            // console.log("GET WALLPAPER RESPONSE", response.data)
-            // if (data.type === 'search') {
-            //     dispatch(searchWallpaperSuccess(response.data))
-            // }
-            // else {
-            //     dispatch(getWallpaperSuccess(response.data))
-            // }
             switch (data.type) {
                 case 'search':
                     dispatch(searchWallpaperSuccess(response.data))

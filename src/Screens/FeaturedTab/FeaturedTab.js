@@ -104,11 +104,11 @@ const FeaturedTab = ({ navigation, onScroll, getAlbums, getWallpapers, currentTa
                         setPage={setAlbumPage}
                     />
                 )}
-            {(!!wallpapers.length && (wallpapersLoading || albumsLoading) && (wapllpaperPage > 1 || albumPage > 1)) && <View style={{
+            {/* {(!!wallpapers.length && (wallpapersLoading || albumsLoading) && (wapllpaperPage > 1 || albumPage > 1)) && <View style={{
                 height: 50,
                 justifyContent: 'center',
                 alignItems: 'center'
-            }}><ActivityIndicator color={colors.highlight} /></View>}
+            }}><ActivityIndicator color={colors.highlight} /></View>} */}
             {/* <CustomFooter isActive='home' navigation={navigation} /> */}
         </View>
 
@@ -133,8 +133,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = createStructuredSelector({
     wallpapers: selectwallpaperFeatured,
     albums: selectAlbumFeatured,
-    wallpapersLoading: selectwallpaperLoading,
-    albumsLoading: selectalbumLoading
+    // wallpapersLoading: selectwallpaperLoading,
+    // albumsLoading: selectalbumLoading
 })
 const mapDispatchToProps = dispatch => ({
     getAlbums: data => dispatch(getAlbumMiddleware(data)),

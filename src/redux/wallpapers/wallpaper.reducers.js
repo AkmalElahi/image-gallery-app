@@ -71,14 +71,14 @@ const wallpaperReducer = (state = INITIAL_STATE, action) => {
             return Object.assign({
                 ...state,
                 isloading: true,
-                searchedWallpapers: [],
+                searchedWallpapers: action.payload.page === 1 ? [] : state.searchedWallpapers,
                 status: "search wallpaper request"
             })
         case wallpaperActionTypes.SEARCH_WALLPAPER_SUCCESS:
             return Object.assign({
                 ...state,
                 isloading: false,
-                searchedWallpapers: action.payload,
+                searchedWallpapers: loadMore(action.payload, state.searchedWallpapers),
                 status: "search wallpaper success"
 
             })

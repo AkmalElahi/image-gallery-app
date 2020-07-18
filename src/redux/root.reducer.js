@@ -10,7 +10,7 @@ import activeRouteReducer from "./activeRoute/activeRoute.reducer";
 const config = {
     key: "root",
     storage: AsyncStorage,
-    //   whitelist: ['search'],
+    whitelist: ['search'],
     blacklist: ['wallpaper', 'albums']
 }
 

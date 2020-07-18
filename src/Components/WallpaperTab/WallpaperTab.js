@@ -4,6 +4,7 @@ import FastImage from 'react-native-fast-image';
 import { connect } from 'react-redux';
 import { colors } from '../../configs/colors';
 import { getWallpaperMiddleware } from '../../redux/wallpapers/wallpaper.actions';
+import { userAction, types } from '../../configs/postActions';
 const { width, height } = Dimensions.get('window')
 let callOnScrollEnd = false
 class ImageContainer extends PureComponent {
@@ -11,10 +12,13 @@ class ImageContainer extends PureComponent {
         const { item: { item }, index, navigation, images, currentTab } = this.props
         return (
 
-            <TouchableOpacity onPress={() => navigation?.navigate('wallpaper', {
-                wallpaperIndex: images.indexOf(item),
-                currentTab: currentTab
-            })}>
+            <TouchableOpacity onPress={() => {
+                userAction({ type: types.VIEW, wallpaperUrl: item.url })
+                navigation?.navigate('wallpaper', {
+                    wallpaperIndex: images.indexOf(item),
+                    currentTab: currentTab
+                })
+            }}>
                 {/* {images.length - 1 === images.indexOf(item) && console.log('end')} */}
 
                 {/* <Image

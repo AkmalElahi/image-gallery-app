@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, BackHandler, Dimensions, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator, PermissionsAndroid, Platform, TextBase, Linking } from 'react-native';
+import { View, Text, BackHandler, Dimensions, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator, PermissionsAndroid, Platform, Share, Linking } from 'react-native';
 import Swiper from 'react-native-swiper';
 import { Icon, Toast } from 'native-base';
 import { colors } from '../../configs/colors';
@@ -11,10 +11,11 @@ import RNFetchBlob from 'rn-fetch-blob';
 import SetAsModal from '../../Components/SetWallpaperModal/SetWallpaperModal';
 import InfoModal from '../../Components/SetWallpaperModal/InfoModal';
 import ReportModal from '../../Components/SetWallpaperModal/ReportModal';
+import { userAction, types } from '../../configs/postActions';
+import { addToFavorite, removeFromFavorite } from '../../redux/SearchHistory/searchHistory.actions';
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
-
-const WallPaper = ({ navigation, wallpaper }) => {
+const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFromFavorite }) => {
     const [opacity, setOpacity] = useState(0.7);
     const [showMore, setShowMore] = useState(false)
     const [modalVisible, setModal] = useState(false);
@@ -23,6 +24,8 @@ const WallPaper = ({ navigation, wallpaper }) => {
     const [reason, setReason] = useState('');
     const [wallpapericonColor, setColor] = useState('white');
     const [settingWallPaper, setLoader] = useState(false);
+    const [favoriteWallpaper, setFavorite] = useState(null);
+    const [currentWallpaper, setCurrentWallpaper] = useState(null);
     const wallpaperIndex = navigation.getParam('wallpaperIndex')
     const currentTab = navigation.getParam('currentTab')
     const setWallpaper = () => {
@@ -50,9 +53,10 @@ const WallPaper = ({ navigation, wallpaper }) => {
         setTimeout(() => BackHandler.exitApp(), 1200)
     }
     const _setWallpaper = (type) => {
+        userAction({ type: types.DOWNLOAD, wallpaperUrl: currentWallpaper.url })
         closeModal()
         ManageWallpaper.setWallpaper({
-            uri: wallpaper[currentTab][wallpaperIndex].url,
+            uri: currentWallpaper.url,
         }, () => OnsetWallpaper(), TYPE[type]);
     };
     async function hasAndroidPermission() {
@@ -72,11 +76,12 @@ const WallPaper = ({ navigation, wallpaper }) => {
             undefined;
     }
     const savePicture = async () => {
+        userAction({ type: types.DOWNLOAD, wallpaperUrl: currentWallpaper.url })
         if (Platform.OS === "android" && !(await hasAndroidPermission())) {
             return;
         }
         var date = new Date();
-        var image_URL = wallpaper[currentTab][wallpaperIndex].url;
+        var image_URL = currentWallpaper.url;
         var ext = getExtention(image_URL);
         ext = "." + ext[0];
         const { config, fs } = RNFetchBlob;
@@ -104,31 +109,76 @@ const WallPaper = ({ navigation, wallpaper }) => {
         });
         // CameraRoll.saveToCameraRoll(wallpaper[currentTab][wallpaperIndex].url);
     };
-    // useEffect( () => {
-    //     reason === 'Copyrighted' && Linking.openURL('http://google.com/')
-    // },[reason])
     useEffect(() => {
-        // const intervalId = setInterval(() => {  //assign interval to a variaable to clear it
-        //     if (opacity > 0) {
-        //         console.log("OPA", opacity)
-        //         setOpacity(opacity - 0.3)
-        //     }
-        // }, 5)
-
-        // return () => clearInterval(intervalId); //This is important
         if (!modalVisible) {
             setTimeout(() => {
                 setOpacity(0)
             }, 700)
         }
     }, [opacity, modalVisible])
+    const  imagePreload  = (wallpapers) =>{
+        const sourses = []
+        wallpapers.map(wallpaper =>  (
+            sourses.push({uri:wallpaper.download_url})
+        ))
+        FastImage.preload(sourses)
+    }
+    useEffect(() => {
+        setCurrentWallpaper(currentTab !== 'favorites' ? wallpaper[currentTab][wallpaperIndex] : favorites[wallpaperIndex])
+        imagePreload(currentTab !== 'favorites' ? wallpaper[currentTab] : favorites)
+    }, [])
     const handleViews = () => {
         showMore ? setShowMore(false) : setOpacity(0.7)
     }
+    useEffect(() => {
+        checkCurrentWallpaper()
+    }, [currentWallpaper])
+    const checkCurrentWallpaper = () => {
+        // console.log({favorites, currentWallpaper})
+        const isFavorite = favorites.find(wallpaper => (
+            wallpaper.url === currentWallpaper?.url
+        ))
+        isFavorite ? setFavorite(isFavorite) : setFavorite(null)
+    }
     const onOk = () => {
         showReportModal(false)
-        reason === 'Copyrighted' && Linking.openURL('http://google.com/')
+        reason === 'Copyrighted' ? (Linking.openURL('http://google.com/')) :
+            (
+                userAction({ type: types.REPORT, wallpaperUrl: currentWallpaper?.url }),
+                Toast.show({
+                    text: "Thank you!",
+                    textStyle: { textAlign: "center", color: "black", },
+                    style: { marginBottom: '30%', width: "80%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
+                    position: "bottom",
+                    // type: 'success',
+                    duration: 2000
+                })
+            )
+
     }
+    const onShare = async () => {
+        // console.log({currentWallpaper})
+        const content = Platform.OS === 'ios' ? {
+            message: 'hey checkout this cool wallpaper!',
+            url: currentWallpaper.url
+        } : {
+                message: `hey checkout this cool wallpaper ${currentWallpaper.url}`,
+            }
+        try {
+            const result = await Share.share(content);
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    };
     return (
         <View style={{ flex: 1 }}>
             {/* <CustomHeader leftButton={() => navigation.goBack()} istransparent={true} ishome={false} icon={'arrow-back'} /> */}
@@ -137,20 +187,27 @@ const WallPaper = ({ navigation, wallpaper }) => {
                 index={wallpaperIndex}
                 containerStyle={{ flex: 1, borderWidth: 0, backgroundColor: colors.background }}
                 loadMinimal={true}
-                loadMinimalSize={1}
+                loadMinimalSize={2}
                 autoplay={false}
                 loop={false}
+                onIndexChanged={(index) => setCurrentWallpaper(currentTab !== 'favorites' ? wallpaper[currentTab][index] : favorites[index])}
                 onTouchStart={handleViews}
                 loadMinimalLoader={<ActivityIndicator color={colors.highlight} />}
                 showsPagination={false}
                 scrollEnabled={true}>
-                {wallpaper[currentTab].map(image => (
+                {currentTab !== 'favorites' ? (wallpaper[currentTab].map(image => (
                     <TouchableWithoutFeedback key={image} onPress={handleViews}>
                         <FastImage source={{
                             uri: image.url,
                             priority: FastImage.priority.high,
                         }} style={{ width, height }} />
-                    </TouchableWithoutFeedback>))}
+                    </TouchableWithoutFeedback>))) : (favorites.map(image => (
+                        <TouchableWithoutFeedback key={image} onPress={handleViews}>
+                            <FastImage source={{
+                                uri: image.url,
+                                priority: FastImage.priority.high,
+                            }} style={{ width, height }} />
+                        </TouchableWithoutFeedback>)))}
             </Swiper>
             <View style={styles.header}>
                 <TouchableOpacity style={styles.headerBtn} onPress={() => navigation.goBack()}>
@@ -161,11 +218,36 @@ const WallPaper = ({ navigation, wallpaper }) => {
                 </TouchableOpacity>
             </View>
             {!modalVisible && !settingWallPaper && < View style={styles.iconsContainer}>
-                <TouchableOpacity style={{
-                    backgroundColor: `rgba(${colors.backgroundRgba},${opacity})`,
-                    ...styles.fadeButton
-                }}>
-                    <Icon name='md-heart-empty' style={styles.icon} />
+                <TouchableOpacity onPress={() => {
+                    !favoriteWallpaper ? (
+                        addToFavorite(currentWallpaper),
+                        userAction({ type: types.FAVORITE, wallpaperUrl: currentWallpaper?.url }),
+                        setFavorite(currentWallpaper),
+                        Toast.show({
+                            text: "Wallpaper saved in favorites!",
+                            textStyle: { textAlign: "center", color: "black", },
+                            style: { marginBottom: '30%', width: "80%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
+                            position: "bottom",
+                            // type: 'success',
+                            duration: 1000
+                        })) : (
+                            removeFromFavorite(currentWallpaper),
+                            setFavorite(null),
+                            Toast.show({
+                                text: "Wallpaper removed from favorites!",
+                                textStyle: { textAlign: "center", color: "black", },
+                                style: { marginBottom: '30%', width: "90%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
+                                position: "bottom",
+                                // type: 'success',
+                                duration: 1000
+                            })
+                        )
+                }}
+                    style={{
+                        backgroundColor: `rgba(${colors.backgroundRgba},${opacity})`,
+                        ...styles.fadeButton
+                    }}>
+                    <Icon name={`${favoriteWallpaper ? 'md-heart' : 'md-heart-empty'}`} style={styles.icon} />
                     {opacity > 0 && <Text style={styles.iconText}>FAVORITES</Text>}
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => savePicture()} style={{
@@ -182,7 +264,7 @@ const WallPaper = ({ navigation, wallpaper }) => {
                     <Icon name='md-phone-portrait' style={{ ...styles.icon, color: wallpapericonColor }} />
                     {opacity > 0 && <Text style={{ ...styles.iconText, color: wallpapericonColor }}>WALLPAPER</Text>}
                 </TouchableOpacity>
-                <TouchableOpacity style={{
+                <TouchableOpacity onPress={onShare} style={{
                     backgroundColor: `rgba(${colors.backgroundRgba},${opacity})`,
                     ...styles.fadeButton
                 }}>
@@ -206,7 +288,7 @@ const WallPaper = ({ navigation, wallpaper }) => {
                 </TouchableOpacity>
             </View>}
             <SetAsModal modalVisible={modalVisible} onclose={closeModal} setWallpaperFor={_setWallpaper} />
-            <InfoModal modalVisible={infoModal} onclose={closeModal} />
+            <InfoModal modalVisible={infoModal} onclose={closeModal} wallpaper={currentWallpaper} />
             <ReportModal modalVisible={reportModal} onclose={closeModal} onOk={onOk} reportReason={reason} setReason={(reason) => setReason(reason)} />
             {/* <CustomFooter navigation={navigation} /> */}
         </View >
@@ -271,7 +353,7 @@ const styles = StyleSheet.create({
 
     // },
     fadeButton: {
-        width:80,
+        width: 80,
         // height:width * 0.22,
         borderRadius: 10,
         alignItems: 'center',
@@ -294,11 +376,26 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         top: height * 0.03,
         left: width * 0.60,
-        right: "2%"
+        right: "2%",
+        borderWidth: 1,
+        borderColor: 'white',
+        marginBottom: 5,
+        borderBottomWidth: 0,
+        shadowColor: 'black',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.9,
+        shadowRadius: 5,
+        elevation: 20,
     }
 })
 
-const mapStateToProps = ({ wallpaper }) => ({
-    wallpaper
+const mapStateToProps = ({ wallpaper, search: { wallpapers } }) => ({
+    wallpaper,
+    favorites: wallpapers
 })
-export default connect(mapStateToProps)(WallPaper)
+const mapDispatchToProps = dispatch => ({
+    addToFavorite: wallpaper => dispatch(addToFavorite(wallpaper)),
+    removeFromFavorite: wallpaper => dispatch(removeFromFavorite(wallpaper))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(WallPaper)
