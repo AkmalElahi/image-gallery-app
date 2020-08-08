@@ -31,7 +31,7 @@ const height = Dimensions.get('window').height
 const FeaturedTab = ({ navigation, onScroll, getAlbums, getWallpapers, currentTab, albums, wallpapers, albumsLoading, wallpapersLoading }) => {
     const [wapllpaperPage, setWallpaperPage] = useState(1)
     const [albumPage, setAlbumPage] = useState(1)
-
+    const activeToBe = navigation.getParam('active')
     const [active, setActive] = useState('wallpaper')
 
     const getData = () => {
@@ -48,6 +48,10 @@ const FeaturedTab = ({ navigation, onScroll, getAlbums, getWallpapers, currentTa
     // const SetTab=(i) =>{
     //     console.log(i)
     // }
+    useEffect(() => {
+        console.log("ACTIVE", activeToBe)
+        activeToBe && setActive(activeToBe)
+    }, [activeToBe])
     // useEffect(() => {
     //     !navigation.isFocused() && setActive('wallpaper')
     //     console.log(navigation.isFocused())

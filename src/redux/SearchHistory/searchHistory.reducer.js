@@ -5,18 +5,31 @@ const setHistory = (historytoAdd, oldHistory, findFor) => {
     const isExist = findFor === 'query' ? (oldHistory.find(history => history[findFor] === historytoAdd)) :
         (oldHistory.find(history => history[findFor] === historytoAdd[findFor]))
     if (isExist) {
-        return oldHistory
+        if (findFor === 'query') {
+            return oldHistory
+        }
+        const objIndex = oldHistory.findIndex((obj => obj.url === historytoAdd.url));
+        oldHistory[objIndex].isFavorite = true
+        return [...oldHistory]
     }
     return findFor === 'query' ? ([{ id: historytoAdd, query: historytoAdd }, ...oldHistory]) :
-        ([...oldHistory, historytoAdd])
+        ([...oldHistory, { ...historytoAdd, isFavorite: true }])
 }
 const removeFavorite = (historytoRemove, oldHistory, removeFor) => {
     const isExist = (oldHistory.find(history => history[removeFor] === historytoRemove[removeFor]))
     if (isExist) {
-        return (oldHistory.filter(history => history[removeFor] !== historytoRemove[removeFor]))
+        if (removeFor === 'query') {
+            return (oldHistory.filter(history => history[removeFor] !== historytoRemove[removeFor]))
+        }
+        const objIndex = oldHistory.findIndex((obj => obj.url === historytoRemove.url));
+        oldHistory[objIndex].isFavorite = false
+        return [...oldHistory]
     }
     return oldHistory
 
+}
+const removeUnFavorites = (wallpapers) => {
+    return wallpapers.filter(wallpaper => wallpaper.isFavorite)
 }
 // {
 //     id: 'batman',
@@ -57,6 +70,11 @@ const searchHistoryReducer = (state = INITIAL_STATE, action) => {
             return Object.assign({
                 ...state,
                 wallpapers: removeFavorite(action.payload, state.wallpapers, 'url')
+            })
+        case searchHistoryActionTypes.REMOVE_ALL_UNFAVORITES:
+            return Object.assign({
+                ...state,
+                wallpapers: removeUnFavorites(state.wallpapers)
             })
         default:
             return state

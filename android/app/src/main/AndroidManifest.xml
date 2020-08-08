@@ -1,16 +1,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.imagegalleryapp">
+  package="com.wallpapercaveapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- <meta-data
+    android:name="com.google.firebase.messaging.default_notification_icon"
+    android:resource="@drawable/ic_stat_ic_notification" /> -->
+    <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+     notification message. See README(https://goo.gl/6BKBk7) for more. -->
+    <!-- <meta-data
+    android:name="com.google.firebase.messaging.default_notification_color"
+    android:resource="@color/colorAccent" /> -->
+      <!-- android:roundIcon="@mipmap/ic_launcher_round" -->
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
-      android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
+      <meta-data
+        android:name="com.google.firebase.messaging.default_notification_icon"
+        android:resource="@drawable/ic_stat_whiteicon" />
+        <!-- <meta-data
+          android:name="com.google.firebase.messaging.default_notification_color"
+          android:resource="@color/colorAccent" /> -->
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
@@ -25,6 +39,25 @@
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+        <!-- <service
+          android:name=".java.MyFirebaseMessagingService"
+          android:exported="false">
+          <intent-filter>
+            <action android:name="com.google.firebase.MESSAGING_EVENT" />
+          </intent-filter>
+        </service> -->
+        <!-- <service android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService">
+          <intent-filter>
+            <action android:name="com.google.firebase.MESSAGING_EVENT" />
+          </intent-filter>
+        </service> -->
+        <!-- <service android:name="io.invertase.firebase.messaging.RNFirebaseInstanceIdService">
+          <intent-filter>
+            <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+         </intent-filter>
+        </service> -->
+        
+        <service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />
     </application>
-
+    
 </manifest>

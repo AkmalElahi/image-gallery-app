@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { FlatList, Dimensions, Image, StyleSheet, TouchableOpacity, ImageBackground, Text, Animated, ActivityIndicator } from 'react-native';
+import { FlatList, Dimensions, Image, StyleSheet, TouchableOpacity, ImageBackground, Text, Animated, ActivityIndicator, Alert } from 'react-native';
 import { Container, Tabs, ScrollableTab, Tab, Card, CardItem, Title, View } from 'native-base';
 import { colors } from '../../configs/colors';
 import FastImage from 'react-native-fast-image';
@@ -14,6 +14,9 @@ import CustomFooter from '../../Components/CustomFooter/Footer';
 import { selectAlbumNew, selectalbumLoading } from '../../redux/albums/albums.selector';
 import { setActiveRoute } from '../../redux/activeRoute/activeRoute.actions';
 import { withNavigationFocus } from 'react-navigation';
+import messaging from '@react-native-firebase/messaging';
+import { navigator } from '../../Navigation/Navigation';
+import { not } from 'react-native-reanimated';
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 
@@ -31,6 +34,7 @@ const height = Dimensions.get('window').height
 
 const NewTab = ({ navigation, albums, wallpapers, getAlbums, getWallpapers, currentTab, wallpapersLoading, albumsLoading, setActiveRoute }) => {
     const [wapllpaperPage, setWallpaperPage] = useState(1)
+    const [notificationData, setNotificationData] = useState(null)
     const [albumPage, setAlbumPage] = useState(1)
 
     const [active, setActive] = useState('wallpaper')
@@ -53,9 +57,63 @@ const NewTab = ({ navigation, albums, wallpapers, getAlbums, getWallpapers, curr
     //     !navigation.isFocused() && setActive('wallpaper')
     //     console.log(navigation.isFocused())
     // }, [navigation.isFocused()]);
+    const findWallpaperIndex = (item) => {
+        // console.log(item, wallpapers)
+        return wallpapers.findIndex(wallpaper => wallpaper.url === item)
+    }
+    const notificationAction = () => {
+        switch (notificationData.type) {
+            case 'home':
+                return
+            case 'album':
+                navigation.navigate('albumGrid', {
+                    title: notificationData.title,
+                    slug: notificationData.slug
+                })
+                return
+            case 'wallpaper':
+                const index = findWallpaperIndex(notificationData.wallpaper)
+                navigation.navigate('wallpaper', {
+                    wallpaperIndex: index,
+                    currentTab: notificationData.tab?.toLowerCase()
+                })
+                return
+        }
+    }
+    useEffect(() => {
+        messaging()
+            .getInitialNotification()
+            .then(remoteMessage => {
+                if (remoteMessage) {
+                    console.log(
+                        'Notification caused app to open from quit state:',
+                        remoteMessage.notification,
+                    );
+                    setNotificationData({ fromNotification: true, ...remoteMessage.data })
+                }
+            });
+        messaging().onNotificationOpenedApp(remoteMessage => {
+            console.log(
+                'Notification caused app to open from background state:',
+                remoteMessage,
+            );
+            // navigator(navigation.navigate, 'Featured', 'home', 'New')
+            setNotificationData({ fromNotification: true, ...remoteMessage.data })
+            // Alert.alert(
+            //   remoteMessage.notification.title,
+            //   remoteMessage.notification.body,
+            // );
+        });
+    }, []);
     useEffect(() => {
         getData()
     }, [active, albumPage, wapllpaperPage]);
+    useEffect(() => {
+        if (!!notificationData?.fromNotification) {
+            // console.log("I AM RUNNING")
+            notificationAction()
+        }
+    }, [wallpapers, notificationData])
     return (
         // <Tabs
         //     style={{ backgroundColor: colors.background }}

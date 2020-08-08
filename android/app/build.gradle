@@ -1,5 +1,6 @@
 apply plugin: "com.android.application"
-
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 import com.android.build.OutputFile
 
 /**
@@ -129,12 +130,12 @@ android {
     }
 
     defaultConfig {
-        // multiDexEnabled true added this line after react-native-background-timer install
-        applicationId "com.imagegalleryapp"
+        applicationId "com.wallpapercaveapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        multiDexEnabled = true //added this line after react-native-firebase install
     }
     splits {
         abi {
@@ -198,11 +199,23 @@ android {
 }
 
 dependencies {
+    // Multidex
+    // implementation 'androidx.multidex:multidex:2.0.1'
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
+    // // Add the Firebase SDK for Google Analytics
+    // implementation 'com.google.firebase:firebase-analytics:17.2.2'
+
+    // // Add the SDK for Firebase Cloud Messaging
+    // implementation 'com.google.firebase:firebase-messaging:20.2.3'
+
+    // implementation 'com.android.support:multidex:1.0.3'   <-- ADD THIS DEPENDENCY FOR MULTIDEX ERROR
+
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'

@@ -15,7 +15,7 @@ const getUserId = async () => {
 const getWallpaperId = (url) => {
     // console.log(url)
     // console.log(url.split('/wp/wp')[1])
-    return url.split('/wp/wp')[1]
+    return url?.split('/wp/wp')[1]
 }
 export const userAction = async ({ type, wallpaperUrl }) => {
     try {

@@ -18,3 +18,7 @@ export const removeFromFavorite = wallpaper => ({
     type: searchHistoryActionTypes.REMOVE_FROM_FAVORITE,
     payload: wallpaper
 })
+
+export const removeAllUnfavorites = () => ({
+    type: searchHistoryActionTypes.REMOVE_ALL_UNFAVORITES,
+})

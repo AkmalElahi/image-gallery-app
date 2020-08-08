@@ -23,11 +23,11 @@ const SetAsModal = ({ modalVisible, onclose, setWallpaperFor }) => (
                     <Text style={styles.btnText} >Home Screen</Text>
                 </TouchableOpacity >
                 <TouchableOpacity style={styles.buttonContainer} onPress={()=> setWallpaperFor('LOCK')}>
-                    <Icon style={{fontSize:18, color:colors.iconColor}} name='lock' />
+                    <Icon style={{fontSize:18, color:colors.iconColor}} name='lock-closed-sharp' />
                     <Text style={styles.btnText} >Lock Screen</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.buttonContainer} onPress={()=> setWallpaperFor('BOTH')}>
-                    <Icon style={{fontSize:18, color:colors.iconColor}} name='md-phone-portrait' />
+                    <Icon style={{fontSize:18, color:colors.iconColor}} name='md-phone-portrait-sharp' />
                     <Text style={styles.btnText} >Home Screen and Lock Screen</Text>
                 </TouchableOpacity>
             </View>

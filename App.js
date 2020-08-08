@@ -14,6 +14,7 @@ import {
   View,
   Text,
   StatusBar,
+  Alert
 } from 'react-native';
 
 import {
@@ -35,7 +36,10 @@ import NavigaationService from './src/Navigation/NavigaationService';
 import { Root } from 'native-base';
 import { getUniqueId, } from 'react-native-device-info';
 import AsyncStorage from '@react-native-community/async-storage';
-const navigation = React.createRef()
+import messaging from '@react-native-firebase/messaging';
+
+
+// const navigation = React.createRef()
 // let currentRoute = 'home'
 // function _getCurrentRouteName(navState) {
 
@@ -69,9 +73,64 @@ const App = () => {
     const deviceID = getUniqueId()
     await AsyncStorage.setItem('deviceID', deviceID);
   }
+  const requestUserPermission = async () => {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+      getFcmToken()
+    }
+  }
+  const getFcmToken = async () => {
+    const fcmToken = await messaging().getToken();
+    if (fcmToken) {
+      console.log(fcmToken);
+      console.log("Your Firebase Token is:", fcmToken);
+    } else {
+      console.log("Failed", "No token received");
+    }
+  }
   useEffect(() => {
     setDeviceId()
+    requestUserPermission()
+    // messaging().onNotificationOpenedApp(remoteMessage => {
+    //   console.log(
+    //     'Notification caused app to open from background state:',
+    //     remoteMessage,
+    //   );
+      // Alert.alert(
+      //   remoteMessage.notification.title,
+      //   remoteMessage.notification.body,
+      // );
+    // });
+
+    // Check whether an initial notification is available
+    // messaging()
+      // .getInitialNotification()
+      // .then(remoteMessage => {
+      //   if (remoteMessage) {
+          // console.log(
+          //   'Notification caused app to open from quit state:',
+          //   remoteMessage.notification,
+          // );
+      //     Alert.alert(
+      //       remoteMessage.notification.title,
+      //       remoteMessage.notification.body,
+      //     );
+      //   }
+      // });
+    // const unsubscribe = messaging().onMessage(async remoteMessage => {
+    //   Alert.alert(remoteMessage.notification.title, remoteMessage.notification.body);
+    // });
+
+
+    // return unsubscribe;
   }, []);
+
+
   return (
     <Root>
       <Provider store={store}>

@@ -8,11 +8,14 @@ import { userAction, types } from '../../configs/postActions';
 const { width, height } = Dimensions.get('window')
 let callOnScrollEnd = false
 class ImageContainer extends PureComponent {
+    state = {
+        loaded: false
+    }
     render() {
         const { item: { item }, index, navigation, images, currentTab } = this.props
         return (
 
-            <TouchableOpacity onPress={() => {
+            <TouchableOpacity style={{ backgroundColor: colors.imageBg, borderColor: 'black', borderWidth: 1 }} onPress={() => {
                 userAction({ type: types.VIEW, wallpaperUrl: item.url })
                 navigation?.navigate('wallpaper', {
                     wallpaperIndex: images.indexOf(item),
@@ -30,8 +33,8 @@ class ImageContainer extends PureComponent {
                         uri: item.thumbnail_url,
                         priority: FastImage.priority.high,
                     }}
-
-                    style={{ width: width / 3, height: height / 3 }}
+                    style={{ width: width / 3, height: height / 3,  }}
+                    // onLoadEnd={() => this.setState({ loaded: true })}
                 />
             </TouchableOpacity>
         )

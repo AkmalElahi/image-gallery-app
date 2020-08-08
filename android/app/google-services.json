@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "587263366052",
+    "firebase_url": "https://wcaveapp.firebaseio.com",
+    "project_id": "wcaveapp",
+    "storage_bucket": "wcaveapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:587263366052:android:f4e2344613da2e3dfea731",
+        "android_client_info": {
+          "package_name": "com.wallpapercaveapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "587263366052-r09a2e7h3o45unmmuq161vu4r26iskp9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wallpapercaveapp",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "587263366052-oscoip79qidr4oqvh8upmijibhm3uu2p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDFu-23L6PotaXWWbonFEa1ChKbuEakP4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "587263366052-oscoip79qidr4oqvh8upmijibhm3uu2p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

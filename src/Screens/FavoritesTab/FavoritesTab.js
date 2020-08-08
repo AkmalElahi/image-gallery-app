@@ -1,14 +1,20 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text } from 'react-native';
 import { colors } from '../../configs/colors';
 import { connect } from 'react-redux';
 import WallpaperTab from '../../Components/WallpaperTab/WallpaperTab';
-const FAvoritesTab = ({ navigation, wallpapers }) => {
+import { withNavigationFocus } from 'react-navigation';
+const FavoritesTab = ({ navigation, wallpapers, isFocused }) => {
+    const [favorites, setFavorites] = useState([])
     // console.log("FAVORITES", wallpapers)
+    useEffect(()=>{
+        const favorites = wallpapers?.filter(wallpaper => wallpaper.isFavorite)
+        setFavorites(favorites)
+    },[isFocused])
     return (
         <View style={{ flex: 1, backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' }}>
-            {!!wallpapers?.length ? (<WallpaperTab
-                wallpapers={wallpapers}
+            {!!favorites?.length ? (<WallpaperTab
+                wallpapers={favorites}
                 currentTab={'favorites'}
                 navigation={navigation}
             />) :
@@ -24,4 +30,4 @@ const mapStateToProps = ({ search: { wallpapers } }) => ({
 // const mapDispatchToProps = dispatch => ({
 //     getAlbumGrid: data => dispatch(getAlbumGrid(data))
 // })
-export default connect(mapStateToProps)(FAvoritesTab)
+export default connect(mapStateToProps)(withNavigationFocus(FavoritesTab))

@@ -1,4 +1,4 @@
-package com.imagegalleryapp;
+package com.wallpapercaveapp;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
@@ -12,7 +12,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "imageGalleryApp";
+    return "wallpapercaveapp";
   }
      @Override
   protected ReactActivityDelegate createReactActivityDelegate() {

@@ -3,7 +3,7 @@
 buildscript {
     ext {
         buildToolsVersion = "28.0.3"
-        minSdkVersion = 16
+        minSdkVersion = 21 // updated it from 16 to 21 after react-native-firebase
         compileSdkVersion = 28
         targetSdkVersion = 28
     }
@@ -13,7 +13,8 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:3.5.2")
-
+        classpath 'com.google.gms:google-services:4.3.3'
+    
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -22,6 +23,7 @@ buildscript {
 allprojects {
     repositories {
         mavenLocal()
+        google()  // Google's Maven repository
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url("$rootDir/../node_modules/react-native/android")
@@ -30,8 +32,6 @@ allprojects {
             // Android JSC is installed from npm
             url("$rootDir/../node_modules/jsc-android/dist")
         }
-
-        google()
         jcenter()
         maven { url 'https://www.jitpack.io' }
     }

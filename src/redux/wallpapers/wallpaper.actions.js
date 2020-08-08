@@ -73,6 +73,7 @@ export const getWallpaperMiddleware = (data) => {
                 dispatch(getWallpaper())
             }
             const response = await axios.get(url)
+            // console.log("WALLPAPERs",response.data)
             switch (data.type) {
                 case 'search':
                     dispatch(searchWallpaperSuccess(response.data))

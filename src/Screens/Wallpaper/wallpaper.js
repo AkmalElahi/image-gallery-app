@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, BackHandler, Dimensions, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator, PermissionsAndroid, Platform, Share, Linking } from 'react-native';
 import Swiper from 'react-native-swiper';
 import { Icon, Toast } from 'native-base';
+import MoreIcon from 'react-native-vector-icons/MaterialIcons'
 import { colors } from '../../configs/colors';
 import FastImage from 'react-native-fast-image';
 import { connect } from 'react-redux';
@@ -12,10 +13,12 @@ import SetAsModal from '../../Components/SetWallpaperModal/SetWallpaperModal';
 import InfoModal from '../../Components/SetWallpaperModal/InfoModal';
 import ReportModal from '../../Components/SetWallpaperModal/ReportModal';
 import { userAction, types } from '../../configs/postActions';
-import { addToFavorite, removeFromFavorite } from '../../redux/SearchHistory/searchHistory.actions';
+import { addToFavorite, removeFromFavorite, removeAllUnfavorites } from '../../redux/SearchHistory/searchHistory.actions';
+import { navigator } from '../../Navigation/Navigation';
+import { withNavigationFocus } from 'react-navigation'
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
-const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFromFavorite }) => {
+const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFromFavorite, isFocused, removeunFavorites }) => {
     const [opacity, setOpacity] = useState(0.7);
     const [showMore, setShowMore] = useState(false)
     const [modalVisible, setModal] = useState(false);
@@ -28,6 +31,7 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
     const [currentWallpaper, setCurrentWallpaper] = useState(null);
     const wallpaperIndex = navigation.getParam('wallpaperIndex')
     const currentTab = navigation.getParam('currentTab')
+    // console.log("CURRENT TAB AND INDEX", currentTab, wallpaperIndex)
     const setWallpaper = () => {
         setOpacity(0.7)
         setModal(true)
@@ -50,7 +54,7 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
             // type: 'success',
             duration: 2000
         })
-        setTimeout(() => BackHandler.exitApp(), 1200)
+        // setTimeout(() => BackHandler.exitApp(), 1200)
     }
     const _setWallpaper = (type) => {
         userAction({ type: types.DOWNLOAD, wallpaperUrl: currentWallpaper.url })
@@ -116,27 +120,38 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
             }, 700)
         }
     }, [opacity, modalVisible])
-    const  imagePreload  = (wallpapers) =>{
+    const imagePreload = (wallpapers) => {
         const sourses = []
-        wallpapers.map(wallpaper =>  (
-            sourses.push({uri:wallpaper.download_url})
+        wallpapers.map(wallpaper => (
+            sourses.push({ uri: wallpaper.download_url })
         ))
         FastImage.preload(sourses)
+    }
+    function handleBackButtonClick() {
+        navigation.goBack()
+        return true;
     }
     useEffect(() => {
         setCurrentWallpaper(currentTab !== 'favorites' ? wallpaper[currentTab][wallpaperIndex] : favorites[wallpaperIndex])
         imagePreload(currentTab !== 'favorites' ? wallpaper[currentTab] : favorites)
+        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
     }, [])
     const handleViews = () => {
         showMore ? setShowMore(false) : setOpacity(0.7)
     }
     useEffect(() => {
+        // console.log("CURRENT WALLPAPER CHANGED", currentWallpaper)
         checkCurrentWallpaper()
     }, [currentWallpaper])
+    useEffect(() => {
+        // currentTab === 'favorites' && !favorites.length && navigator(navigation.navigate, 'tabs', 'home', 'search')
+        // console.log("FROM WALLPAPWE",isFocused)
+        isFocused && removeunFavorites()
+    }, [isFocused])
     const checkCurrentWallpaper = () => {
         // console.log({favorites, currentWallpaper})
-        const isFavorite = favorites.find(wallpaper => (
-            wallpaper.url === currentWallpaper?.url
+        const isFavorite = favorites?.find(wallpaper => (
+            wallpaper?.url === currentWallpaper?.url && wallpaper?.isFavorite
         ))
         isFavorite ? setFavorite(isFavorite) : setFavorite(null)
     }
@@ -159,10 +174,10 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
     const onShare = async () => {
         // console.log({currentWallpaper})
         const content = Platform.OS === 'ios' ? {
-            message: 'hey checkout this cool wallpaper!',
+            message: 'Hey! Checkout this wallpaper from the WallpaperCave app',
             url: currentWallpaper.url
         } : {
-                message: `hey checkout this cool wallpaper ${currentWallpaper.url}`,
+                message: `Hey! Checkout this wallpaper from the WallpaperCave app ${currentWallpaper?.share_url}`,
             }
         try {
             const result = await Share.share(content);
@@ -179,6 +194,51 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
             alert(error.message);
         }
     };
+    const favoriteWallpaperActions = () => {
+        !favoriteWallpaper ? (
+            addToFavorite(currentWallpaper),
+            userAction({ type: types.FAVORITE, wallpaperUrl: currentWallpaper?.url }),
+            setFavorite(currentWallpaper),
+            Toast.show({
+                text: "Wallpaper saved in favorites!",
+                textStyle: { textAlign: "center", color: "black", },
+                style: { marginBottom: '30%', width: "80%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
+                position: "bottom",
+                // type: 'success',
+                duration: 1000
+            })) : (
+                // beforeRemoveFromFavorites(),
+                removeFromFavorite(currentWallpaper),
+                setFavorite(null),
+                Toast.show({
+                    text: "Wallpaper removed from favorites!",
+                    textStyle: { textAlign: "center", color: "black", },
+                    style: { marginBottom: '30%', width: "90%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
+                    position: "bottom",
+                    // type: 'success',
+                    duration: 1000
+                })
+            )
+    }
+    // const beforeRemoveFromFavorites = () => {
+    //     const wallpaperToRemove = currentWallpaper
+    //     console.log("INSIDE BEFORE REMOVE", currentWallpaper, favorites)
+    //     let currentIndex
+    //     currentTab === 'favorites' && (currentIndex = favorites.findIndex(favorite => favorite === currentWallpaper),
+    //         console.log(favorites.length, currentIndex),
+    //         favorites.length - 1 === currentIndex ? (setCurrentWallpaper(favorites[currentIndex - 1])) : (
+    //             setCurrentWallpaper(favorites[currentIndex - 1]
+    //             )))
+    //     setFavorite(null)
+        // checkCurrentWallpaper()
+        //         checkCurrentWallpaper()
+        //     :
+        // (currentIndex = wallpaper[currentTab].findIndex(item => item === currentWallpaper),
+        //     wallpaper[currentTab].length - 1 === currentIndex ? (setCurrentWallpaper(wallpaper[currentTab][currentIndex + 1])) :
+        //     (setCurrentWallpaper(wallpaper[currentTab][currentIndex + 1]))
+        // )
+
+    // }
     return (
         <View style={{ flex: 1 }}>
             {/* <CustomHeader leftButton={() => navigation.goBack()} istransparent={true} ishome={false} icon={'arrow-back'} /> */}
@@ -200,11 +260,13 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
                         <FastImage source={{
                             uri: image.url,
                             priority: FastImage.priority.high,
+                            // cache: FastImage.cacheControl.cacheOnly,
                         }} style={{ width, height }} />
                     </TouchableWithoutFeedback>))) : (favorites.map(image => (
                         <TouchableWithoutFeedback key={image} onPress={handleViews}>
                             <FastImage source={{
                                 uri: image.url,
+                                // cache: FastImage.cacheControl.cacheOnly,
                                 priority: FastImage.priority.high,
                             }} style={{ width, height }} />
                         </TouchableWithoutFeedback>)))}
@@ -214,40 +276,16 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
                     <Icon name='arrow-back' style={{ color: 'white' }} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.headerBtn} onPress={() => setShowMore(true)}>
-                    <Icon name='md-more' style={{ color: 'white' }} />
+                    <MoreIcon name='more-vert' style={{ color: 'white', fontSize: 25 }} />
                 </TouchableOpacity>
             </View>
             {!modalVisible && !settingWallPaper && < View style={styles.iconsContainer}>
-                <TouchableOpacity onPress={() => {
-                    !favoriteWallpaper ? (
-                        addToFavorite(currentWallpaper),
-                        userAction({ type: types.FAVORITE, wallpaperUrl: currentWallpaper?.url }),
-                        setFavorite(currentWallpaper),
-                        Toast.show({
-                            text: "Wallpaper saved in favorites!",
-                            textStyle: { textAlign: "center", color: "black", },
-                            style: { marginBottom: '30%', width: "80%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
-                            position: "bottom",
-                            // type: 'success',
-                            duration: 1000
-                        })) : (
-                            removeFromFavorite(currentWallpaper),
-                            setFavorite(null),
-                            Toast.show({
-                                text: "Wallpaper removed from favorites!",
-                                textStyle: { textAlign: "center", color: "black", },
-                                style: { marginBottom: '30%', width: "90%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
-                                position: "bottom",
-                                // type: 'success',
-                                duration: 1000
-                            })
-                        )
-                }}
+                <TouchableOpacity onPress={() => favoriteWallpaperActions()}
                     style={{
                         backgroundColor: `rgba(${colors.backgroundRgba},${opacity})`,
                         ...styles.fadeButton
                     }}>
-                    <Icon name={`${favoriteWallpaper ? 'md-heart' : 'md-heart-empty'}`} style={styles.icon} />
+                    <Icon name={`${favoriteWallpaper ? 'md-heart' : 'heart-outline'}`} style={styles.icon} />
                     {opacity > 0 && <Text style={styles.iconText}>FAVORITES</Text>}
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => savePicture()} style={{
@@ -261,14 +299,14 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
                     backgroundColor: `rgba(${colors.backgroundRgba},${opacity})`,
                     ...styles.fadeButton
                 }}>
-                    <Icon name='md-phone-portrait' style={{ ...styles.icon, color: wallpapericonColor }} />
+                    <Icon name='md-phone-portrait-sharp' style={{ ...styles.icon, color: wallpapericonColor }} />
                     {opacity > 0 && <Text style={{ ...styles.iconText, color: wallpapericonColor }}>WALLPAPER</Text>}
                 </TouchableOpacity>
                 <TouchableOpacity onPress={onShare} style={{
                     backgroundColor: `rgba(${colors.backgroundRgba},${opacity})`,
                     ...styles.fadeButton
                 }}>
-                    <Icon name='md-share' style={styles.icon} />
+                    <Icon name='md-share-social' style={styles.icon} />
                     {opacity > 0 && <Text style={styles.iconText}>SHARE</Text>}
                 </TouchableOpacity>
 
@@ -395,7 +433,8 @@ const mapStateToProps = ({ wallpaper, search: { wallpapers } }) => ({
 })
 const mapDispatchToProps = dispatch => ({
     addToFavorite: wallpaper => dispatch(addToFavorite(wallpaper)),
-    removeFromFavorite: wallpaper => dispatch(removeFromFavorite(wallpaper))
+    removeFromFavorite: wallpaper => dispatch(removeFromFavorite(wallpaper)),
+    removeunFavorites: () => dispatch(removeAllUnfavorites())
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(WallPaper)
+export default connect(mapStateToProps, mapDispatchToProps)(withNavigationFocus(WallPaper))
