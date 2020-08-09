@@ -29,7 +29,7 @@ const removeFavorite = (historytoRemove, oldHistory, removeFor) => {
 
 }
 const removeUnFavorites = (wallpapers) => {
-    return wallpapers.filter(wallpaper => wallpaper.isFavorite)
+    return wallpapers?.filter(wallpaper => wallpaper.isFavorite)
 }
 // {
 //     id: 'batman',
@@ -75,6 +75,11 @@ const searchHistoryReducer = (state = INITIAL_STATE, action) => {
             return Object.assign({
                 ...state,
                 wallpapers: removeUnFavorites(state.wallpapers)
+            })
+        case searchHistoryActionTypes.DELETE_SEARCH_HISTORY:
+            return Object.assign({
+                ...state,
+                history: []
             })
         default:
             return state

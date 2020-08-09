@@ -22,3 +22,7 @@ export const removeFromFavorite = wallpaper => ({
 export const removeAllUnfavorites = () => ({
     type: searchHistoryActionTypes.REMOVE_ALL_UNFAVORITES,
 })
+
+export const deleteSearchHistory = () => ({
+    type: searchHistoryActionTypes.DELETE_SEARCH_HISTORY,
+})
