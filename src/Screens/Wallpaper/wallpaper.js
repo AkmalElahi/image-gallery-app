@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, BackHandler, Dimensions, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator, PermissionsAndroid, Platform, Share, Linking } from 'react-native';
 import Swiper from 'react-native-swiper';
-import { Icon, Toast } from 'native-base';
+import { Icon } from 'native-base';
 import MoreIcon from 'react-native-vector-icons/MaterialIcons'
 import { colors } from '../../configs/colors';
 import FastImage from 'react-native-fast-image';
@@ -16,6 +16,8 @@ import { userAction, types } from '../../configs/postActions';
 import { addToFavorite, removeFromFavorite, removeAllUnfavorites } from '../../redux/SearchHistory/searchHistory.actions';
 import { navigator } from '../../Navigation/Navigation';
 import { withNavigationFocus } from 'react-navigation'
+import Toast from 'react-native-root-toast';
+
 const width = Dimensions.get('window').width
 const height = Dimensions.get('window').height
 const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFromFavorite, isFocused, removeunFavorites }) => {
@@ -46,14 +48,24 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
     }
     const OnsetWallpaper = () => {
         setLoader(false)
-        Toast.show({
-            text: "Wallpaper set successfully",
-            textStyle: { textAlign: "center", color: "black", },
-            style: { marginBottom: '30%', width: "60%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
-            position: "bottom",
+        Toast.show(
+            "Wallpaper set successfully",
+            // textStyle: { textAlign: "center", color: "black", },
+            // style: { marginBottom: '30%', width: "60%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
+            // position: "bottom",
             // type: 'success',
-            duration: 2000
-        })
+            // duration: 2000,
+            {
+                duration: Toast.durations.SHORT,
+                position: -80,
+                shadow: true,
+                animation: true,
+                hideOnPress: true,
+                delay: 0,
+                backgroundColor: 'rgba(250,250,250,1)',
+                textColor: 'black',
+                styles: { borderRadius: 25 }
+            })
         // setTimeout(() => BackHandler.exitApp(), 1200)
     }
     const _setWallpaper = (type) => {
@@ -101,13 +113,17 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
             }
         }
         config(options).fetch('GET', image_URL).then((res) => {
-            Toast.show({
-                text: "Wallpaper downloaded successfully",
-                textStyle: { textAlign: "center", color: "black", },
-                style: { marginBottom: '30%', width: "80%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
-                position: "bottom",
-                // type: 'success',
-                duration: 2000
+            Toast.show(
+                "Wallpaper downloaded successfully", {
+                duration: Toast.durations.SHORT,
+                position: -80,
+                shadow: true,
+                animation: true,
+                hideOnPress: true,
+                delay: 0,
+                backgroundColor: 'rgba(250,250,250,1)',
+                textColor: 'black',
+                styles: { borderRadius: 25 }
             })
 
         });
@@ -160,14 +176,19 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
         reason === 'Copyrighted' ? (Linking.openURL('http://google.com/')) :
             (
                 userAction({ type: types.REPORT, wallpaperUrl: currentWallpaper?.url }),
-                Toast.show({
-                    text: "Thank you!",
-                    textStyle: { textAlign: "center", color: "black", },
-                    style: { marginBottom: '30%', width: "80%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
-                    position: "bottom",
-                    // type: 'success',
-                    duration: 2000
-                })
+                Toast.show(
+                    "Thank you!",
+                    {
+                        duration: Toast.durations.SHORT,
+                        position: -80,
+                        shadow: true,
+                        animation: true,
+                        hideOnPress: true,
+                        delay: 0,
+                        backgroundColor: 'rgba(250,250,250,1)',
+                        textColor: 'black',
+                        styles: { borderRadius: 25 }
+                    })
             )
 
     }
@@ -199,25 +220,35 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
             addToFavorite(currentWallpaper),
             userAction({ type: types.FAVORITE, wallpaperUrl: currentWallpaper?.url }),
             setFavorite(currentWallpaper),
-            Toast.show({
-                text: "Wallpaper saved in favorites!",
-                textStyle: { textAlign: "center", color: "black", },
-                style: { marginBottom: '30%', width: "80%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
-                position: "bottom",
-                // type: 'success',
-                duration: 1000
-            })) : (
+            Toast.show(
+                "Wallpaper saved in favorites!",
+                {
+                    duration: Toast.durations.SHORT,
+                    position: -80,
+                    shadow: true,
+                    animation: true,
+                    hideOnPress: true,
+                    delay: 0,
+                    backgroundColor: 'rgba(250,250,250,1)',
+                    textColor: 'black',
+                    styles: { borderRadius: 25 }
+                })) : (
                 // beforeRemoveFromFavorites(),
                 removeFromFavorite(currentWallpaper),
                 setFavorite(null),
-                Toast.show({
-                    text: "Wallpaper removed from favorites!",
-                    textStyle: { textAlign: "center", color: "black", },
-                    style: { marginBottom: '30%', width: "90%", alignSelf: "center", borderRadius: 25, backgroundColor: 'rgba(250,250,250,0.7)' },
-                    position: "bottom",
-                    // type: 'success',
-                    duration: 1000
-                })
+                Toast.show(
+                    "Wallpaper removed from favorites!",
+                    {
+                        duration: Toast.durations.SHORT,
+                        position: -80,
+                        shadow: true,
+                        animation: true,
+                        hideOnPress: true,
+                        delay: 0,
+                        backgroundColor: 'rgba(250,250,250,1)',
+                        textColor: 'black',
+                        styles: { borderRadius: 25 }
+                    })
             )
     }
     // const beforeRemoveFromFavorites = () => {
@@ -230,13 +261,13 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
     //             setCurrentWallpaper(favorites[currentIndex - 1]
     //             )))
     //     setFavorite(null)
-        // checkCurrentWallpaper()
-        //         checkCurrentWallpaper()
-        //     :
-        // (currentIndex = wallpaper[currentTab].findIndex(item => item === currentWallpaper),
-        //     wallpaper[currentTab].length - 1 === currentIndex ? (setCurrentWallpaper(wallpaper[currentTab][currentIndex + 1])) :
-        //     (setCurrentWallpaper(wallpaper[currentTab][currentIndex + 1]))
-        // )
+    // checkCurrentWallpaper()
+    //         checkCurrentWallpaper()
+    //     :
+    // (currentIndex = wallpaper[currentTab].findIndex(item => item === currentWallpaper),
+    //     wallpaper[currentTab].length - 1 === currentIndex ? (setCurrentWallpaper(wallpaper[currentTab][currentIndex + 1])) :
+    //     (setCurrentWallpaper(wallpaper[currentTab][currentIndex + 1]))
+    // )
 
     // }
     return (
