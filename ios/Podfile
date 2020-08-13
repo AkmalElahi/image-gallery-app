@@ -79,7 +79,6 @@ target 'imageGalleryApp' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
-  pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
 
 
 
