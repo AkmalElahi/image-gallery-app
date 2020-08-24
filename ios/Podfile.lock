@@ -158,7 +158,7 @@ PODS:
     - OpenSSL-Universal/Static (= 1.0.2.19)
   - OpenSSL-Universal/Static (1.0.2.19)
   - PromisesObjC (1.2.10)
-  - Protobuf (3.12.0)
+  - Protobuf (3.13.0)
   - RCTRequired (0.62.2)
   - RCTTypeSafety (0.62.2):
     - FBLazyVector (= 0.62.2)
@@ -636,7 +636,7 @@ SPEC CHECKSUMS:
   nanopb: c43f40fadfe79e8b8db116583945847910cbabc9
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   PromisesObjC: b14b1c6b68e306650688599de8a45e49fae81151
-  Protobuf: 2793fcd0622a00b546c60e7cbbcc493e043e9bb9
+  Protobuf: 3dac39b34a08151c6d949560efe3f86134a3f748
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
   RCTTypeSafety: 93006131180074cffa227a1075802c89a49dd4ce
   React: 29a8b1a02bd764fb7644ef04019270849b9a7ac3
@@ -676,6 +676,6 @@ SPEC CHECKSUMS:
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 8420fdb0a678e9b5fad4f32d63973a3a8fedacd3
+PODFILE CHECKSUM: 6294099f1cbbeb902c2e55cbb1aa520a6bff4729
 
 COCOAPODS: 1.6.1

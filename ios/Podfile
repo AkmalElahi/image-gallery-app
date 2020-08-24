@@ -1,6 +1,7 @@
 platform :ios, '9.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
+
 def add_flipper_pods!(versions = {})
   versions['Flipper'] ||= '~> 0.33.1'
   versions['DoubleConversion'] ||= '1.1.7'
@@ -44,8 +45,9 @@ def flipper_post_install(installer)
   end
 end
 
-target 'imageGalleryApp' do
-  # Pods for imageGalleryApp
+
+target 'wallpapercaveapp' do
+  # Pods for wallpapercaveapp
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
   pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
@@ -89,7 +91,7 @@ target 'imageGalleryApp' do
 
   pod 'RNFBAnalytics', :path => '../node_modules/@react-native-firebase/analytics'
 
-  target 'imageGalleryAppTests' do
+  target 'wallpapercaveappTests' do
     inherit! :complete
     # Pods for testing
   end
@@ -106,10 +108,10 @@ target 'imageGalleryApp' do
   end
 end
 
-target 'imageGalleryApp-tvOS' do
-  # Pods for imageGalleryApp-tvOS
+target 'wallpapercaveapp-tvOS' do
+  # Pods for wallpapercaveapp-tvOS
 
-  target 'imageGalleryApp-tvOSTests' do
+  target 'wallpapercaveapp-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end

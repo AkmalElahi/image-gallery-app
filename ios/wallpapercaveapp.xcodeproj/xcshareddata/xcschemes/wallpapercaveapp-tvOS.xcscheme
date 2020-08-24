@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-               BuildableName = "imageGalleryApp-tvOS.app"
-               BlueprintName = "imageGalleryApp-tvOS"
-               ReferencedContainer = "container:imageGalleryApp.xcodeproj">
+               BuildableName = "wallpapercaveapp-tvOS.app"
+               BlueprintName = "wallpapercaveapp-tvOS"
+               ReferencedContainer = "container:wallpapercaveapp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E48F1E0B4A5D006451C7"
-               BuildableName = "imageGalleryApp-tvOSTests.xctest"
-               BlueprintName = "imageGalleryApp-tvOSTests"
-               ReferencedContainer = "container:imageGalleryApp.xcodeproj">
+               BuildableName = "wallpapercaveapp-tvOSTests.xctest"
+               BlueprintName = "wallpapercaveapp-tvOSTests"
+               ReferencedContainer = "container:wallpapercaveapp.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "imageGalleryApp-tvOS.app"
-            BlueprintName = "imageGalleryApp-tvOS"
-            ReferencedContainer = "container:imageGalleryApp.xcodeproj">
+            BuildableName = "wallpapercaveapp-tvOS.app"
+            BlueprintName = "wallpapercaveapp-tvOS"
+            ReferencedContainer = "container:wallpapercaveapp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "imageGalleryApp-tvOS.app"
-            BlueprintName = "imageGalleryApp-tvOS"
-            ReferencedContainer = "container:imageGalleryApp.xcodeproj">
+            BuildableName = "wallpapercaveapp-tvOS.app"
+            BlueprintName = "wallpapercaveapp-tvOS"
+            ReferencedContainer = "container:wallpapercaveapp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
