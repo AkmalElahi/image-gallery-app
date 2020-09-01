@@ -12,14 +12,16 @@ class ImageContainer extends PureComponent {
         loaded: false
     }
     render() {
-        const { item: { item }, index, navigation, images, currentTab } = this.props
+        const { item: { item }, index, navigation, images, currentTab, page, setPage } = this.props
         return (
 
             <TouchableOpacity style={{ backgroundColor: colors.imageBg, borderColor: 'black', borderWidth: 1 }} onPress={() => {
                 userAction({ type: types.VIEW, wallpaperUrl: item.url })
                 navigation?.navigate('wallpaper', {
                     wallpaperIndex: images.indexOf(item),
-                    currentTab: currentTab
+                    currentTab: currentTab,
+                    page,
+                    setPage
                 })
             }}>
                 {/* {images.length - 1 === images.indexOf(item) && console.log('end')} */}
@@ -78,7 +80,7 @@ class WallpaperTab extends PureComponent {
 
                     onScroll={onScroll}
                     onEndReachedThreshold={0.5}
-                    renderItem={(item, index) => (<ImageContainer item={item} index={index} navigation={navigation} images={wallpapers} currentTab={currentTab} />)}
+                    renderItem={(item, index) => (<ImageContainer page={page} setPage={setPage} item={item} index={index} navigation={navigation} images={wallpapers} currentTab={currentTab} />)}
                     keyExtractor={(item, index) => index}
                 />
         )

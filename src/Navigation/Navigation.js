@@ -5,7 +5,7 @@ import WallPaper from '../Screens/Wallpaper/wallpaper';
 import SearchScreen from '../Screens/Search/Search';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 import DrawerContent from '../Components/Drawer/Drawer';
-import { Dimensions, Text, View, Animated, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { Dimensions, Text, View, Animated, Image, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
 import header from '../assets/app-header.png'
 import React, { useRef, useState, useEffect } from 'react';
 import { createMaterialTopTabNavigator, createBottomTabNavigator } from 'react-navigation-tabs';
@@ -226,6 +226,8 @@ const TabNavigator = createMaterialTopTabNavigator({
             scrollEnabled: true,
             // width:60,
             tabStyle: {
+        marginTop:Platform.OS === 'ios' ? 30 : 0,
+
                 width: 100,
                 // width:100,
                 alignSelf: 'center',

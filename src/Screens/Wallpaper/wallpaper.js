@@ -33,6 +33,9 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
     const [currentWallpaper, setCurrentWallpaper] = useState(null);
     const wallpaperIndex = navigation.getParam('wallpaperIndex')
     const currentTab = navigation.getParam('currentTab')
+    const page = navigation.getParam('page')
+    const setPage = navigation.getParam('setPage')
+
     // console.log("CURRENT TAB AND INDEX", currentTab, wallpaperIndex)
     const setWallpaper = () => {
         setOpacity(0.7)
@@ -71,9 +74,13 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
     const _setWallpaper = (type) => {
         userAction({ type: types.DOWNLOAD, wallpaperUrl: currentWallpaper.url })
         closeModal()
-        ManageWallpaper.setWallpaper({
-            uri: currentWallpaper.url,
-        }, () => OnsetWallpaper(), TYPE[type]);
+        if (Platform.os === 'android') {
+            ManageWallpaper.setWallpaper({
+                uri: currentWallpaper.url,
+            }, () => OnsetWallpaper(), TYPE[type]);
+            return
+        }
+        savePicture()
     };
     async function hasAndroidPermission() {
         const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
@@ -112,9 +119,10 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
                 description: 'Image'
             }
         }
+        const text = Platform.OS === 'android' ? "Wallpaper downloaded successfully" : "Wallpaper downloaded in your device"
         config(options).fetch('GET', image_URL).then((res) => {
             Toast.show(
-                "Wallpaper downloaded successfully", {
+                text, {
                 duration: Toast.durations.SHORT,
                 position: -80,
                 shadow: true,
@@ -270,6 +278,21 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
     // )
 
     // }
+    const isContentEnd = (index) => {
+        if (currentTab === 'favorites') {
+            // console.log(favorites.length - 1, index)
+            // return favorites.length - 1 === index
+            return false
+        }
+        return wallpaper[currentTab].length - 1 === index
+    }
+    const _handleScroll = (index) => {
+        setCurrentWallpaper(currentTab !== 'favorites' ? wallpaper[currentTab][index] : favorites[index])
+        if(isContentEnd(index)){
+            // console.log(isContentEnd(index))
+            setPage(page + 1)
+        }
+    }
     return (
         <View style={{ flex: 1 }}>
             {/* <CustomHeader leftButton={() => navigation.goBack()} istransparent={true} ishome={false} icon={'arrow-back'} /> */}
@@ -281,7 +304,7 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
                 loadMinimalSize={2}
                 autoplay={false}
                 loop={false}
-                onIndexChanged={(index) => setCurrentWallpaper(currentTab !== 'favorites' ? wallpaper[currentTab][index] : favorites[index])}
+                onIndexChanged={(index) => _handleScroll(index)}
                 onTouchStart={handleViews}
                 loadMinimalLoader={<ActivityIndicator color={colors.highlight} />}
                 showsPagination={false}
