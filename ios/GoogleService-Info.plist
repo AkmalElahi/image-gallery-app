@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>587263366052-b9m921b1rtsar3bpo7s5qvk704ahah3a.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.587263366052-b9m921b1rtsar3bpo7s5qvk704ahah3a</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>587263366052-r09a2e7h3o45unmmuq161vu4r26iskp9.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyC6xoJGmDXJGolSzV6Dv6IrQAYUXJ1DPG8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>587263366052</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.reactjs.native.example.wallpapercaveapp</string>
+	<key>PROJECT_ID</key>
+	<string>wcaveapp</string>
+	<key>STORAGE_BUCKET</key>
+	<string>wcaveapp.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:587263366052:ios:50d5e96da3ee15cbfea731</string>
+	<key>DATABASE_URL</key>
+	<string>https://wcaveapp.firebaseio.com</string>
+</dict>
+</plist>
