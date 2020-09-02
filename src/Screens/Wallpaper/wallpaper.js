@@ -74,7 +74,7 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
     const _setWallpaper = (type) => {
         userAction({ type: types.DOWNLOAD, wallpaperUrl: currentWallpaper.url })
         closeModal()
-        if (Platform.os === 'android') {
+        if (Platform.OS === 'android') {
             ManageWallpaper.setWallpaper({
                 uri: currentWallpaper.url,
             }, () => OnsetWallpaper(), TYPE[type]);
@@ -333,7 +333,7 @@ const WallPaper = ({ navigation, wallpaper, addToFavorite, favorites, removeFrom
                     <MoreIcon name='more-vert' style={{ color: 'white', fontSize: 25 }} />
                 </TouchableOpacity>
             </View>
-            {!modalVisible && !settingWallPaper && < View style={styles.iconsContainer}>
+            {!modalVisible && !settingWallPaper && opacity > 0 && < View style={styles.iconsContainer}>
                 <TouchableOpacity onPress={() => favoriteWallpaperActions()}
                     style={{
                         backgroundColor: `rgba(${colors.backgroundRgba},${opacity})`,
